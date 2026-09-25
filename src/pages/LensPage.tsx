@@ -1,8 +1,11 @@
 import copy from '../../config/copy.json' with { type: 'json' }
+import theme from '../../config/theme.json' with { type: 'json' }
 import { FilterBar } from '../components/FilterBar.tsx'
 import { RoleSwitcher } from '../components/layout/RoleSwitcher.tsx'
 import { HeroStrip } from '../components/HeroStrip.tsx'
 import { VendorGrid } from '../components/VendorGrid.tsx'
+import { PortfolioBand } from '../components/PortfolioBand.tsx'
+import { CostLossPanel } from '../components/CostLossPanel.tsx'
 import { VendorProfiles } from '../components/VendorProfiles.tsx'
 import { lensById, roleById, scopeVendors, useStore } from '../state/store.tsx'
 
@@ -17,6 +20,8 @@ export function LensPage({ lensId }: { lensId: string }) {
   const suffix = copy.ui.periodSuffix[st.period]
   const sections = cfg.sections.filter(m => !role.hideMetrics.includes(m))
   const hero = cfg.hero.filter(m => !role.hideMetrics.includes(m))
+  const bands = ('portfolioSections' in cfg ? cfg.portfolioSections as string[] : [])
+    .filter(m => !role.hideMetrics.includes(m))
   const [before, risk, after] = cfg.subtitle.split(/[{}]/)
 
   return (
@@ -32,9 +37,20 @@ export function LensPage({ lensId }: { lensId: string }) {
       <HeroStrip metrics={hero} scope={vendors} st={st} suffix={suffix} />
       <FilterBar lensId={lensId} sections={sections} />
       <VendorGrid vendors={vendors} sections={sections} st={st} suffix={suffix}
-                  onDrill={v => d({ t: 'set', patch: { detailVendor: v } })} />
+                  designations={'designationStrip' in cfg ? !!cfg.designationStrip : false}
+                  onDrill={v => d({ t: 'set', patch: { detailVendor: v } })}
+                  onDesignation={(v, dg) => {
+                    const next = { ...st.designation }
+                    if (dg) next[v] = dg; else delete next[v]
+                    d({ t: 'lens', id: lensId, patch: { designation: next } })
+                  }} />
+      <PortfolioBand ids={bands} vendors={vendors} st={st}
+                     width={theme.sheetMinWidth - 84}
+                     onDimension={dim => d({ t: 'lens', id: lensId, patch: { dimension: dim } })} />
       <VendorProfiles vendors={vendors} st={st}
                       onDrill={v => d({ t: 'set', patch: { detailVendor: v } })} />
+      <CostLossPanel scope={vendors}
+                     onVendor={v => d({ t: 'set', patch: { detailVendor: v } })} />
     </>
   )
 }

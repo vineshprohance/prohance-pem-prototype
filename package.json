@@ -1,7 +1,7 @@
 {
   "name": "prohance-pem-ui",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.8.0",
   "type": "module",
   "description": "ProHance PEM dashboard prototype. Config-driven lenses, vendors, metrics and roles over a computed dataset.",
   "scripts": {

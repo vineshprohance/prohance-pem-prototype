@@ -1,7 +1,9 @@
 {
-  "$comment": "Each vendor produces one deterministic daily series. 'calibration' is the 2026 year-to-date total each key must sum to, so the Yearly 2026 view reproduces the numbers you want on screen. Change a calibration number and every window that contains those days moves with it. Add a vendor by copying a block and giving it a new 'seed'.",
+  "$comment": "Each vendor produces one deterministic daily series. 'calibration' is the 2026 year-to-date total each key must sum to. 'personality' gives each vendor a shape over the year: 'swing' is how far a key travels peak to trough, signed so a positive number moves with the vendor's fortunes, and 'shape' is improving, sagging or sliding. The year totals are unchanged by it, so every calibrated figure still holds. A project carries a 'share' of the vendor's task volume and a 'factor' that tilts its on-time rate around the vendor's; its assigned, on-time and late task counts, and whether it is at risk, are all derived from those, so the status and the numbers beside it cannot disagree. projectOnTimeFloor is the on-time percentage a project has to clear. Sites carry a 'rate' multiplier on the vendor's bill rate; a site above highRateUsdPerHour is a high-rate site. Every figure here is derived from a target model, not hand-typed: 950 contracted FTE, 60% portfolio capacity utilization, $40M leakage value, 550K hours not delivered, 380 FTE equivalent, and Cost Loss deliberately below Leakage Value. See docs/DATA-MODEL.md. Rates: one rate card per vendor, applied to billable, idle and overtime hours alike. No overtime premium.",
   "today": "2026-09-15",
   "calibrationYear": 2026,
+  "hoursPerFteDay": 7.5,
+  "renewalWindowDays": 90,
   "vendors": [
     {
       "id": "ph-engineering",
@@ -9,32 +11,131 @@
       "vertical": "healthcare",
       "logo": "jamocha",
       "seed": 1103,
-      "headcount": 75,
+      "headcount": 300,
       "dataFrom": "2016-01-01",
       "dataTo": "2026-09-15",
-      "billRate": 64.85,
-      "idleRate": 306.8,
+      "billRate": 74,
+      "idleRate": 74,
       "growth": 0.028,
+      "tier": "strategic",
+      "contractRenewal": "2026-11-12",
+      "contractOwner": "Vendor Management",
+      "contract": {
+        "value": 138000000,
+        "from": "2024-01-01",
+        "to": "2026-11-30",
+        "burn": 0.96
+      },
+      "claimedOtMultiplier": 0.75,
       "calibration": {
-        "expected": 71815,
-        "productive": 81740,
-        "logged": 106610,
-        "target": 6704,
-        "completed": 6742,
-        "onTime": 3007,
-        "idle": 832.71,
-        "leak": 5501.1
+        "expected": 433980,
+        "productive": 295106,
+        "logged": 491844,
+        "target": 26400,
+        "completed": 25001,
+        "onTime": 19251,
+        "idle": 68858,
+        "ot": 34429
       },
       "sites": [
-        { "name": "Bengaluru", "factor": 0.9965, "weight": 0.6265 },
-        { "name": "Chennai",   "factor": 0.9787, "weight": 0.2735 },
-        { "name": "Hyderabad", "factor": 1.0815, "weight": 0.1 }
+        {
+          "name": "Bengaluru",
+          "factor": 1.12,
+          "weight": 0.45,
+          "rate": 0.84
+        },
+        {
+          "name": "Kraków",
+          "factor": 1.05,
+          "weight": 0.22,
+          "rate": 1.18
+        },
+        {
+          "name": "Manila",
+          "factor": 0.92,
+          "weight": 0.2,
+          "rate": 0.78
+        },
+        {
+          "name": "Belfast",
+          "factor": 0.78,
+          "weight": 0.13,
+          "rate": 1.55
+        }
       ],
-      "roles": [
-        { "title": "Team Member", "count": 43, "pct": 62.32 },
-        { "title": "Sr. Manager", "count": 13, "pct": 18.84 },
-        { "title": "Team Manager", "count": 13, "pct": 18.84 }
-      ]
+      "designations": [
+        {
+          "name": "Associate",
+          "count": 120,
+          "factor": 1.12
+        },
+        {
+          "name": "Senior Associate",
+          "count": 96,
+          "factor": 1.02
+        },
+        {
+          "name": "Lead",
+          "count": 54,
+          "factor": 0.92
+        },
+        {
+          "name": "Manager",
+          "count": 30,
+          "factor": 0.8
+        }
+      ],
+      "skills": [
+        {
+          "name": "Backend Dev",
+          "count": 112,
+          "factor": 1.06
+        },
+        {
+          "name": "Frontend Dev",
+          "count": 76,
+          "factor": 0.97
+        },
+        {
+          "name": "QA Automation",
+          "count": 68,
+          "factor": 1.11
+        },
+        {
+          "name": "Data Engineering",
+          "count": 44,
+          "factor": 0.92
+        }
+      ],
+      "projects": [
+        {
+          "name": "Digital Banking Platform",
+          "factor": 0.88,
+          "share": 0.62
+        },
+        {
+          "name": "Cloud Migration Wave 2",
+          "factor": 1.09,
+          "share": 0.38
+        }
+      ],
+      "penaltyExposure": 180000,
+      "slaBreaches": 7,
+      "personality": {
+        "shape": "improving",
+        "wobble": 0.045,
+        "utilizationSpread": 0.45,
+        "swing": {
+          "expected": 0.02,
+          "productive": 0.2,
+          "logged": 0.04,
+          "target": 0.04,
+          "completed": 0.12,
+          "onTime": 0.28,
+          "idle": -0.24,
+          "ot": -0.2
+        }
+      }
     },
     {
       "id": "ph-operations",
@@ -42,68 +143,253 @@
       "vertical": "healthcare",
       "logo": "prohance",
       "seed": 2207,
-      "headcount": 148,
+      "headcount": 580,
       "dataFrom": "2016-01-01",
-      "dataTo": "2026-09-13",
-      "billRate": 382.6,
-      "idleRate": 1502.66,
+      "dataTo": "2026-09-15",
+      "billRate": 53,
+      "idleRate": 53,
       "growth": 0.035,
+      "tier": "tactical",
+      "contractRenewal": "2026-12-04",
+      "contractOwner": "Vendor Management",
+      "contract": {
+        "value": 125000000,
+        "from": "2024-12-01",
+        "to": "2026-12-31",
+        "burn": 0.78
+      },
+      "claimedOtMultiplier": 1.5,
       "calibration": {
-        "expected": 141660,
-        "productive": 150330,
-        "logged": 192470,
-        "target": 301,
-        "completed": 71,
-        "onTime": 27,
-        "idle": 5630,
-        "leak": 24385.9
+        "expected": 839028,
+        "productive": 486636,
+        "logged": 884793,
+        "target": 23200,
+        "completed": 20161,
+        "onTime": 15322,
+        "idle": 131392,
+        "ot": 88479
       },
       "sites": [
-        { "name": "Bengaluru", "factor": 1.0076, "weight": 0.502 },
-        { "name": "Chennai",   "factor": 0.964,  "weight": 0.1 },
-        { "name": "Hyderabad", "factor": 1.0206, "weight": 0.398 }
+        {
+          "name": "Manila",
+          "factor": 1.09,
+          "weight": 0.38,
+          "rate": 0.9
+        },
+        {
+          "name": "Bengaluru",
+          "factor": 1.15,
+          "weight": 0.3,
+          "rate": 0.96
+        },
+        {
+          "name": "Cebu",
+          "factor": 0.84,
+          "weight": 0.19,
+          "rate": 0.82
+        },
+        {
+          "name": "Guadalajara",
+          "factor": 0.76,
+          "weight": 0.13,
+          "rate": 1.62
+        }
       ],
-      "roles": [
-        { "title": "Team Member", "count": 70, "pct": 47.3 },
-        { "title": "Team Manager Ops", "count": 22, "pct": 14.86 },
-        { "title": "Team Lead Implementation", "count": 20, "pct": 13.51 },
-        { "title": "AM Managers", "count": 11, "pct": 7.43 },
-        { "title": "Leadership", "count": 10, "pct": 6.76 },
-        { "title": "Team Manager", "count": 7, "pct": 4.73 },
-        { "title": "Team Manager sales", "count": 5, "pct": 3.38 },
-        { "title": "AIPEX Manager", "count": 1, "pct": 0.68 },
-        { "title": "AM Leadership Direct Report Access", "count": 1, "pct": 0.68 },
-        { "title": "Leadership - Implementation", "count": 1, "pct": 0.68 }
-      ]
+      "designations": [
+        {
+          "name": "Associate",
+          "count": 261,
+          "factor": 1.12
+        },
+        {
+          "name": "Senior Associate",
+          "count": 174,
+          "factor": 1.02
+        },
+        {
+          "name": "Lead",
+          "count": 87,
+          "factor": 0.92
+        },
+        {
+          "name": "Manager",
+          "count": 58,
+          "factor": 0.8
+        }
+      ],
+      "skills": [
+        {
+          "name": "Backend Dev",
+          "count": 172,
+          "factor": 0.98
+        },
+        {
+          "name": "Frontend Dev",
+          "count": 122,
+          "factor": 1.05
+        },
+        {
+          "name": "QA Automation",
+          "count": 180,
+          "factor": 0.94
+        },
+        {
+          "name": "Data Engineering",
+          "count": 106,
+          "factor": 1.08
+        }
+      ],
+      "projects": [
+        {
+          "name": "ERP Modernization",
+          "factor": 0.86,
+          "share": 0.45
+        },
+        {
+          "name": "Claims Processing Automation",
+          "factor": 1.07,
+          "share": 0.33
+        },
+        {
+          "name": "Data Platform Consolidation",
+          "factor": 1.1,
+          "share": 0.22
+        }
+      ],
+      "penaltyExposure": 215000,
+      "slaBreaches": 11,
+      "personality": {
+        "shape": "sagging",
+        "wobble": 0.05,
+        "utilizationSpread": 0.55,
+        "swing": {
+          "expected": 0.01,
+          "productive": 0.16,
+          "logged": 0.03,
+          "target": 0.02,
+          "completed": 0.1,
+          "onTime": 0.32,
+          "idle": -0.22,
+          "ot": -0.26
+        }
+      }
     },
     {
       "id": "ploceus",
       "name": "Ploceus",
-      "vertical": "healthcare",
+      "vertical": "services",
       "logo": "ploceus",
       "seed": 3301,
-      "headcount": 16,
+      "headcount": 70,
       "dataFrom": "2016-01-01",
-      "dataTo": "2026-08-16",
-      "billRate": 96.4145,
-      "idleRate": 288.95,
+      "dataTo": "2026-09-15",
+      "billRate": 90,
+      "idleRate": 90,
       "growth": -0.02,
+      "tier": "tactical",
+      "contractRenewal": "2026-10-15",
+      "contractOwner": "Vendor Management",
+      "contract": {
+        "value": 12700000,
+        "from": "2025-10-01",
+        "to": "2026-10-31",
+        "burn": 0.64
+      },
+      "claimedOtMultiplier": 2,
       "calibration": {
-        "expected": 11167,
-        "productive": 6490,
-        "logged": 15580,
-        "target": 0,
-        "completed": 0,
-        "onTime": 0,
-        "idle": 1540,
-        "leak": 6758.6
+        "expected": 101262,
+        "productive": 42530,
+        "logged": 94511,
+        "target": 1680,
+        "completed": 1428,
+        "onTime": 428,
+        "idle": 15594,
+        "ot": 14177
       },
       "sites": [
-        { "name": "Bengaluru", "factor": 0.99904, "weight": 1 }
+        {
+          "name": "Zurich",
+          "factor": 1.04,
+          "weight": 0.62,
+          "rate": 1.05
+        },
+        {
+          "name": "London",
+          "factor": 0.93,
+          "weight": 0.38,
+          "rate": 0.92
+        }
       ],
-      "roles": [
-        { "title": "Team Member", "count": 16, "pct": 100 }
-      ]
+      "designations": [
+        {
+          "name": "Associate",
+          "count": 32,
+          "factor": 1.12
+        },
+        {
+          "name": "Senior Associate",
+          "count": 21,
+          "factor": 1.02
+        },
+        {
+          "name": "Lead",
+          "count": 11,
+          "factor": 0.92
+        },
+        {
+          "name": "Manager",
+          "count": 6,
+          "factor": 0.8
+        }
+      ],
+      "skills": [
+        {
+          "name": "Backend Dev",
+          "count": 26,
+          "factor": 1.02
+        },
+        {
+          "name": "Frontend Dev",
+          "count": 18,
+          "factor": 0.95
+        },
+        {
+          "name": "QA Automation",
+          "count": 17,
+          "factor": 1.08
+        },
+        {
+          "name": "Data Engineering",
+          "count": 9,
+          "factor": 0.9
+        }
+      ],
+      "projects": [
+        {
+          "name": "Customer Portal Refresh",
+          "factor": 0.9,
+          "share": 1.0
+        }
+      ],
+      "penaltyExposure": 55000,
+      "slaBreaches": 4,
+      "personality": {
+        "shape": "sliding",
+        "wobble": 0.06,
+        "utilizationSpread": 0.75,
+        "swing": {
+          "expected": 0.03,
+          "productive": 0.4,
+          "logged": 0.06,
+          "target": 0.05,
+          "completed": 0.1,
+          "onTime": 0.7,
+          "idle": -0.34,
+          "ot": -0.4
+        }
+      }
     }
-  ]
+  ],
+  "highRateUsdPerHour": 65,
+  "projectOnTimeFloor": 70
 }

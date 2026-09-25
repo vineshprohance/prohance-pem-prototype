@@ -12,9 +12,9 @@ export function DeltaChip({ delta, suffix, trend, style }: {
   const Up = trend ? TrendUp : ArrowUp
   const Dn = trend ? TrendDown : ArrowDown
   return (
-    <div className={`delta ${delta.dir}`} style={style}>
+    <div className={`delta ${delta.dir} t-${delta.tone}`} style={style}>
       {delta.dir === 'up' ? <Up /> : <Dn />}
-      <b>{delta.text}</b> {suffix}
+      <b>{delta.text}</b> {suffix && <span className="dsuf">{suffix}</span>}
     </div>
   )
 }

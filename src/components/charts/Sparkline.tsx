@@ -38,7 +38,8 @@ export function Sparkline({ labels, values, color, name }: {
   return (
     <>
       <svg className="kpi-spark" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
-           onMouseLeave={() => { onLeave(); setActive(null) }}>
+           style={{ touchAction: 'pan-y' }}
+           onPointerLeave={e => { onLeave(e); if (e.pointerType === 'mouse') setActive(null) }}>
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor={color} stopOpacity=".35" />
@@ -54,7 +55,8 @@ export function Sparkline({ labels, values, color, name }: {
         {pts.map((p, i) => (
           <rect key={i} x={p[0] - slot / 2} y={0} width={slot} height={H} fill="transparent"
                 tabIndex={0} className="hotpt"
-                onMouseEnter={e => { setActive(i); onEnter({ label: labels[i] ?? '', bx: 0, bw: 0, rows: [[color, name, values[i]]] }, e) }}
+                onPointerEnter={e => { setActive(i); onEnter({ label: labels[i] ?? '', bx: 0, bw: 0, rows: [[color, name, values[i]]] }, e) }}
+                onPointerDown={e => { setActive(i); onEnter({ label: labels[i] ?? '', bx: 0, bw: 0, rows: [[color, name, values[i]]] }, e) }}
                 onFocus={e => { setActive(i); onEnter({ label: labels[i] ?? '', bx: 0, bw: 0, rows: [[color, name, values[i]]] }, e) }}
                 onBlur={() => { onLeave(); setActive(null) }} />
         ))}

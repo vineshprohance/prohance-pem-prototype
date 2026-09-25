@@ -20,12 +20,14 @@ export interface Option { value: string; label: string }
  *
  * `emptyMeansAll` decides what an empty selection commits as. Vendors fall back
  * to everything, because a vendor filter with nothing in it is meaningless.
- * Verticals do not: clearing them is a real state that empties the page, which
- * is how scoping works in the product.
+ *
+ * `minSelected` is a floor the list will not go below. Verticals set it to 1:
+ * clearing the last one would empty the whole page, and an empty page is the
+ * "No data available" state this prototype is not allowed to reach.
  */
 export function MultiSelect({
   id, label, options, applied, staged, onStage, onCommit, open, onToggle,
-  showSelectAll, testId, emptyMeansAll = true,
+  showSelectAll, testId, emptyMeansAll = true, minSelected = 0,
 }: {
   id: string
   label: string
@@ -41,6 +43,8 @@ export function MultiSelect({
   showSelectAll?: boolean
   testId?: string
   emptyMeansAll?: boolean
+  /** the list will not let you stage fewer than this many options */
+  minSelected?: number
 }) {
   const values = options.map(o => o.value)
   const same = (a: string[], b: string[]) => a.length === b.length && a.every(v => b.includes(v))
@@ -48,21 +52,29 @@ export function MultiSelect({
   const dirty = !same(staged, applied)
   const canReset = !same(applied, values) || !same(staged, values)
 
-  const toggle = (v: string) =>
+  /** the last options standing when a floor is set: ticked and not removable */
+  const locked = (v: string) =>
+    minSelected > 0 && staged.length <= minSelected && staged.includes(v)
+
+  const toggle = (v: string) => {
+    if (locked(v)) return
     onStage(staged.includes(v) ? staged.filter(x => x !== v) : [...staged, v])
+  }
 
   return (
     <Popover id={id} label={label} open={open} onToggle={onToggle} testId={testId}>
       {showSelectAll && (
         <label className="opt">
           <input type="checkbox" checked={allStaged} data-testid={`${id}-all`}
-                 onChange={() => onStage(allStaged ? [] : values.slice())} />
+                 onChange={() => onStage(allStaged ? values.slice(0, minSelected) : values.slice())} />
           {' '}Select All
         </label>
       )}
       {options.map(o => (
         <label className="opt" key={o.value}>
           <input type="checkbox" className={`${id}Opt`} value={o.value}
+                 disabled={locked(o.value)}
+                 title={locked(o.value) ? 'At least one must stay selected' : undefined}
                  checked={staged.includes(o.value)} onChange={() => toggle(o.value)} />
           {' '}{o.label}
         </label>

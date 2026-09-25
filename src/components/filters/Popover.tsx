@@ -52,12 +52,20 @@ export function Popover({ id, label, open, onToggle, wide, children, testId }: {
   )
 }
 
-export const PopHead = ({ title, onPrev, onNext }: {
-  title: string; onPrev: () => void; onNext: () => void
+/** The paging header inside a date panel. The arrows disable at the ends of the
+ *  data rather than paging into windows that have nothing in them. */
+export const PopHead = ({ title, onPrev, onNext, prevDisabled, nextDisabled }: {
+  title: string
+  onPrev: () => void
+  onNext: () => void
+  prevDisabled?: boolean
+  nextDisabled?: boolean
 }) => (
   <div className="pop-head">
-    <button type="button" className="nav-arrow" aria-label="Previous" onClick={onPrev}>‹</button>
+    <button type="button" className="pop-nav" aria-label="Previous"
+            disabled={prevDisabled} onClick={onPrev}>‹</button>
     <span>{title}</span>
-    <button type="button" className="nav-arrow" aria-label="Next" onClick={onNext}>›</button>
+    <button type="button" className="pop-nav" aria-label="Next"
+            disabled={nextDisabled} onClick={onNext}>›</button>
   </div>
 )

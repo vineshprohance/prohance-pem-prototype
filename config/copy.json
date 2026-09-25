@@ -3,7 +3,9 @@
   "metrics": {
     "vendorScore": {
       "label": "Vendor Score",
-      "tooltip": { "card": "One health score, weighted from utilization and delivery." }
+      "tooltip": {
+        "card": "One health score, weighted from utilization and delivery."
+      }
     },
     "capacityUtilization": {
       "label": "Capacity Utilization",
@@ -16,7 +18,9 @@
     },
     "outputRate": {
       "label": "Output Rate",
-      "tooltip": { "card": "Work completed against work assigned, this period." }
+      "tooltip": {
+        "card": "Tasks completed against tasks assigned, this period."
+      }
     },
     "slaCompliance": {
       "label": "SLA Compliance",
@@ -26,12 +30,10 @@
       }
     },
     "headcountByRole": {
-      "label": "Headcount by Role",
-      "tooltip": { "card": "Configured headcount, broken down by mapped role." }
-    },
-    "riskStatus": {
-      "label": "Risk Status",
-      "tooltip": { "card": "Risk level, set by SLA, utilization and output thresholds." }
+      "label": "Headcount by Designation",
+      "tooltip": {
+        "card": "Configured headcount, broken down by designation."
+      }
     },
     "effectiveUtilization": {
       "label": "Effective Utilization",
@@ -43,62 +45,260 @@
     },
     "idleCost": {
       "label": "Idle Time Cost",
-      "tooltip": { "card": "Idle time inside logged hours, valued at your rate card." }
+      "tooltip": {
+        "card": "Idle time inside logged hours, valued at your rate card."
+      }
     },
     "highRateUtilization": {
-      "label": "Utilization of High-rate Resources",
-      "tooltip": { "card": "Productive work against capacity contracted, highest-rate roles only." }
+      "label": "Utilization at High-rate Locations",
+      "tooltip": {
+        "card": "Productive work against hours logged, at your highest-rate locations."
+      }
     },
     "productiveVsNonProductive": {
       "label": "Productive vs Non-Productive Utilization",
-      "tooltip": { "card": "Logged hours divided into productive and other work." }
+      "tooltip": {
+        "card": "Logged hours divided into productive and other work."
+      }
     },
     "billablePortfolioCost": {
-      "label": "Billable Portfolio Cost",
-      "tooltip": { "card": "Productive work delivered, valued at your rate card." }
+      "label": "Actual Cost",
+      "tooltip": {
+        "hero": "Productive work delivered, valued at your rate card.",
+        "card": "Productive work delivered, valued at your rate card."
+      }
     },
     "leakageSummary": {
-      "label": "Leakage Summary",
-      "tooltip": { "card": "Contracted capacity this vendor did not turn into productive work." }
+      "label": "Leakage Breakdown",
+      "tooltip": {
+        "card": "Contracted capacity that did not become productive work."
+      }
+    },
+    "leakageValue": {
+      "label": "Leakage Value",
+      "tooltip": {
+        "hero": "Booked hours that did not become productive work, valued at your rate card."
+      }
+    },
+    "hoursNotDelivered": {
+      "label": "Hours not delivered",
+      "tooltip": {
+        "hero": "Contracted productive hours not received."
+      }
+    },
+    "fteEquivalent": {
+      "label": "FTE equivalent",
+      "tooltip": {
+        "hero": "Hours not delivered counted as full-time people, at 7.5 hours a working day."
+      }
+    },
+    "contractRenewals": {
+      "label": "Upcoming Contract Renewals",
+      "tooltip": {
+        "hero": "Vendor contracts falling due in the next 90 days."
+      }
+    },
+    "overtimeIntegrity": {
+      "label": "Overtime Integrity",
+      "tooltip": {
+        "card": "Overtime worked against overtime billed."
+      }
     },
     "costAtRisk": {
       "label": "Cost Loss",
-      "tooltip": { "card": "Contracted capacity not delivered, valued at your rate card." }
+      "tooltip": {
+        "hero": "Contracted capacity not delivered, valued at your rate card.",
+        "card": "Contracted capacity not delivered, valued at your rate card."
+      }
     },
     "atRiskVendors": {
       "label": "At-Risk Vendors",
-      "tooltip": { "card": "Vendors that crossed a risk threshold on SLA, utilization or output." }
+      "tooltip": {
+        "card": "Vendors whose Vendor Score is in the critical band."
+      }
     },
     "idleCapacity": {
-      "label": "Idle Capacity",
+      "label": "Unused Capacity",
       "tooltip": {
-        "hero": "Contracted capacity left unused, all vendors in view.",
-        "card": "Contracted capacity left unused."
+        "hero": "Contracted capacity that never became productive work, all vendors in view.",
+        "card": "Contracted capacity that never became productive work."
+      }
+    },
+    "excessFtes": {
+      "label": "Excess FTEs",
+      "tooltip": {
+        "card": "Contracted capacity not delivered, counted as whole people."
       }
     },
     "overUtilizedEmployee": {
       "label": "Over Utilized Employee",
-      "tooltip": { "card": "People working above their expected capacity." }
+      "tooltip": {
+        "hero": "People working above their expected capacity, all vendors in view.",
+        "card": "People working above their expected capacity."
+      }
     },
     "underUtilizedEmployee": {
       "label": "Under Utilized Employee",
-      "tooltip": { "card": "People working below their expected capacity." }
+      "tooltip": {
+        "hero": "People working below their expected capacity, all vendors in view.",
+        "card": "People working below their expected capacity."
+      }
     },
     "totalHeadcount": {
       "label": "Total Headcount",
-      "tooltip": { "card": "Headcount configured for this vendor." }
+      "tooltip": {
+        "card": "Headcount configured for this vendor."
+      }
     },
     "billableCostTrend": {
       "label": "Billable Cost Trend",
-      "tooltip": { "card": "Productive work delivered, valued at your rate card." }
+      "tooltip": {
+        "card": "Productive work delivered, valued at your rate card."
+      }
     },
     "vendorScoreTrend": {
       "label": "Vendor Score Trend",
-      "tooltip": { "card": "One health score, weighted from utilization and delivery." }
+      "tooltip": {
+        "card": "One health score, weighted from utilization and delivery."
+      }
     },
     "gap": {
       "label": "Gap",
-      "tooltip": { "card": "Logged hours that were not productive work." }
+      "tooltip": {
+        "card": "Logged hours that were not productive work."
+      }
+    },
+    "partnerEfficiency": {
+      "label": "Partner Efficiency",
+      "tooltip": {
+        "card": "Contract value against what the delivered work cost."
+      }
+    },
+    "leakageFtes": {
+      "label": "FTEs on non-productive work",
+      "tooltip": {
+        "card": "Booked hours that were not productive work, counted as whole people."
+      }
+    },
+    "contractValue": {
+      "label": "Contract Value",
+      "tooltip": {
+        "card": "Contracted capacity at your rate card."
+      }
+    },
+    "actualCost": {
+      "label": "Actual Cost",
+      "tooltip": {
+        "card": "Productive work delivered, valued at your rate card."
+      }
+    },
+    "costPerProductiveHour": {
+      "label": "Cost per productive hour",
+      "tooltip": {
+        "card": "What an hour of productive work actually costs."
+      }
+    },
+    "capacityGap": {
+      "label": "Capacity gap",
+      "tooltip": {
+        "card": "Contracted productive hours the vendor did not deliver."
+      }
+    },
+    "costOfGap": {
+      "label": "Cost of the gap",
+      "tooltip": {
+        "card": "The capacity gap at your rate card."
+      }
+    },
+    "trackedOtHours": {
+      "label": "Overtime tracked",
+      "tooltip": {
+        "card": "Productive time above 7.5 hours a person a day."
+      }
+    },
+    "claimedOtHours": {
+      "label": "Overtime claimed",
+      "tooltip": {
+        "card": "Overtime the vendor billed, fed from the client's VMS."
+      }
+    },
+    "claimedOtFtes": {
+      "label": "Claimed overtime in FTEs",
+      "tooltip": {
+        "card": "Overtime billed, counted as whole people."
+      }
+    },
+    "claimedOtCost": {
+      "label": "Overtime billed",
+      "tooltip": {
+        "card": "Overtime billed at your rate card."
+      }
+    },
+    "unproductiveOtCost": {
+      "label": "Unproductive overtime cost",
+      "tooltip": {
+        "card": "Overtime that did not become productive work, valued at your rate card."
+      }
+    },
+    "consolidationLevers": {
+      "label": "Consolidation Levers",
+      "tooltip": {
+        "card": "Efficiency on comparable work, vendor by vendor."
+      }
+    },
+    "financialImpact": {
+      "label": "Financial Impact",
+      "tooltip": {
+        "hero": "Contracted capacity not delivered, valued at your rate card."
+      }
+    },
+    "projectsAtRisk": {
+      "label": "Projects at Risk",
+      "tooltip": {
+        "hero": "Projects off track against their plan."
+      }
+    },
+    "contractValueAtRisk": {
+      "label": "Contract Value at Risk",
+      "tooltip": {
+        "hero": "Unspent contract money sitting against vendors whose delivery is off track."
+      }
+    },
+    "contractBurn": {
+      "label": "Contract Burn",
+      "tooltip": {
+        "card": "Contract budget consumed against the contract term."
+      }
+    },
+    "deliveryPredictability": {
+      "label": "On-Time Delivery",
+      "tooltip": {
+        "card": "Tasks delivered on time against tasks assigned."
+      }
+    },
+    "penaltyExposure": {
+      "label": "Penalty Exposure",
+      "tooltip": {
+        "card": "Penalties the contract has triggered, fed from your contract terms."
+      }
+    },
+    "vendorDependency": {
+      "label": "Vendor Dependency Risk",
+      "tooltip": {
+        "card": "Share of delivered work sitting with a single vendor."
+      }
+    },
+    "slaRiskSummary": {
+      "label": "SLA Risk Summary",
+      "tooltip": {
+        "card": "Projects off track against their plan, by vendor."
+      }
+    },
+    "resources": {
+      "label": "Resources",
+      "tooltip": {
+        "card": "People this vendor has on contract with you."
+      }
     }
   },
   "ui": {
@@ -109,7 +309,12 @@
     "allLocations": "All Locations",
     "selectLocation": "Select Location",
     "vendorProfiles": "Vendor Profiles",
-    "periods": ["Yearly", "Quaterly", "Monthly", "Weekly"],
+    "periods": [
+      "Yearly",
+      "Quaterly",
+      "Monthly",
+      "Weekly"
+    ],
     "periodSuffix": {
       "Yearly": "vs last year",
       "Quaterly": "vs last quarter",

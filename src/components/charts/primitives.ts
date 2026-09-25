@@ -4,6 +4,11 @@
 
 export const GEO = { H: 190, L: 44, R: 10, T: 12, B: 40 }
 
+/** Axis label size. The product uses 12px on a 761px-wide chart; three vendor
+ *  columns on one sheet are narrower than that, so 11 is the size that still
+ *  fits flat at desktop width and tilts cleanly on an iPad. */
+export const LABEL_FONT = 11
+
 export type TickKind = 'num' | 'pct' | 'k' | 'kk'
 export type ValueUnit = 'pct' | 'money' | 'khrs' | 'hrs' | 'count' | undefined
 

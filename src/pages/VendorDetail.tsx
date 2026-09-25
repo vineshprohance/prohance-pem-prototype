@@ -12,6 +12,7 @@ import { Sparkline } from '../components/charts/Sparkline.tsx'
 import { Badge, DeltaChip, NoData } from '../components/Badge.tsx'
 import { BackArrow, VendorLogo } from '../components/Icons.tsx'
 import { InfoTip, metricLabel } from '../components/InfoTip.tsx'
+import { useLabelReserve } from '../components/useLabelReserve.ts'
 import { DatePicker } from '../components/filters/DatePicker.tsx'
 import { MultiSelect } from '../components/filters/MultiSelect.tsx'
 import type { DetailState } from '../state/types.ts'
@@ -40,6 +41,7 @@ export function VendorDetail({ vendor }: { vendor: string }) {
   const locPending = s.openPop === 'dloc' &&
     !(stagedLoc.length === st.locations.length && stagedLoc.every(v => st.locations.includes(v)))
   const suffix = copy.ui.periodSuffix[st.period]
+  const dkpis = useLabelReserve(DETAIL_CFG.kpis.join('|'), '--dkpi-title-h')
 
   const score = METRICS.vendorScore.card!(ctx)
   const sites = cfg?.sites.map(x => x.name) ?? []
@@ -138,7 +140,7 @@ export function VendorDetail({ vendor }: { vendor: string }) {
         </div>
       </section>
 
-      <section className="dkpis">
+      <section className="dkpis" ref={dkpis}>
         {DETAIL_CFG.kpis.map(id => {
           const def = METRICS[id]
           const view = def?.hero ? def.hero(ctx) : null
@@ -146,7 +148,9 @@ export function VendorDetail({ vendor }: { vendor: string }) {
           const spark = sparkCfg ? heroSpark(st, sparkCfg.kind, [vendor]) : null
           return (
             <div className="card dkpi" key={id}>
-              <div className="t">{metricLabel(id)} <InfoTip id={id} scope="detail" /></div>
+              <div className="t">
+                <span className="kl">{metricLabel(id)} <InfoTip id={id} scope="detail" /></span>
+              </div>
               <div className="b">
                 <div className="v">{view?.value ?? '0'}</div>
                 {spark && <Sparkline labels={spark.labels} values={spark.values}

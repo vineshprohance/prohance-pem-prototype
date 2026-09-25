@@ -51,7 +51,14 @@ export function prevRange(st: DateState): Range {
 }
 
 /** X-axis granularity: months for a year, ISO weeks for a quarter or month,
- *  days for a custom range. Truncated at TODAY so no empty future buckets. */
+ *  days for a custom range. Truncated at TODAY so no empty future buckets.
+ *
+ *  A trailing bucket that has not finished is dropped. Two days of a week, or
+ *  a fortnight of a month, plotted beside full ones makes every hours and money
+ *  line fall off a cliff at the right edge, and a viewer reads that as a
+ *  collapse rather than as "the period is still running". Ratios would survive
+ *  it, but the charts have to behave the same way as each other. Daily buckets
+ *  are never partial, so the Weekly view keeps every day including today. */
 export function bucketsFor(st: DateState): Bucket[] {
   const r = rangeFor(st)
   const end = Math.min(r.b, TODAY)
@@ -63,15 +70,19 @@ export function bucketsFor(st: DateState): Bucket[] {
       const a = Date.UTC(st.year, m, 1)
       const b = Date.UTC(st.year, m + 1, 0)
       if (a > end) break
-      out.push({ label: `${MMM[m]} ${st.year}`, a, b: Math.min(b, end) })
+      if (b > end) break              // the month is still running
+      out.push({ label: `${MMM[m]} ${st.year}`, a, b })
     }
-    return out
+    return out.length ? out : [{ label: `${MMM[new Date(r.a).getUTCMonth()]} ${st.year}`, a: r.a, b: end }]
   }
   if (st.period === 'Quaterly' || st.period === 'Monthly') {
     for (let mon = mondayOf(r.a); mon <= end; mon += 7 * DAY_MS) {
-      out.push({ label: `W${isoWeek(mon)}`, a: Math.max(mon, r.a), b: Math.min(mon + 6 * DAY_MS, end) })
+      const a = Math.max(mon, r.a)
+      const b = mon + 6 * DAY_MS
+      if (b > end) break              // the week is still running
+      out.push({ label: `W${isoWeek(mon)}`, a, b: Math.min(b, r.b) })
     }
-    return out
+    return out.length ? out : [{ label: `W${isoWeek(r.a)}`, a: r.a, b: end }]
   }
   for (let t = r.a; t <= end; t += DAY_MS) {
     const d = new Date(t)
@@ -80,25 +91,33 @@ export function bucketsFor(st: DateState): Bucket[] {
   return out
 }
 
-/** Label shown on the date picker trigger. */
+/** Label shown on the date picker trigger. A range inside one year prints the
+ *  year once, which is both better typography and 45px of filter bar back. */
 export function dateLabel(st: DateState): string {
   if (st.period === 'Yearly') return String(st.year)
   if (st.period === 'Quaterly') return `Q${st.quarter} ${st.year}`
   if (st.period === 'Monthly') return `${MMM[st.month]} ${st.year}`
   const a = Math.min(st.rangeA, st.rangeB)
   const b = Math.max(st.rangeA, st.rangeB)
-  return `${fmtDay(a)} – ${fmtDay(b)}`
+  const sameYear = new Date(a).getUTCFullYear() === new Date(b).getUTCFullYear()
+  return `${sameYear ? fmtDay(a).replace(/ \d{4}$/, '') : fmtDay(a)} – ${fmtDay(b)}`
 }
 
-/** Rolling eleven weeks ending at the window, for the KPI sparklines. */
+/** Rolling eleven weeks for the KPI sparklines.
+ *
+ *  Anchored on the last week that actually finished. A part week at the right
+ *  end holds two or three days against ten full weeks, so an hours or money
+ *  line would fall off a cliff at the edge and read as a collapse that has not
+ *  happened. Every bucket here is seven days, so the line compares like with
+ *  like. */
 export function sparkWeeks(st: DateState): Range[] {
   const r = rangeFor(st)
   const end = Math.min(r.b, TODAY)
+  let last = mondayOf(end)
+  if (last + 6 * DAY_MS > end) last -= 7 * DAY_MS
   const out: Range[] = []
-  let mon = mondayOf(end) - 10 * 7 * DAY_MS
-  for (let i = 0; i < 11; i++, mon += 7 * DAY_MS) {
-    out.push({ a: mon, b: Math.min(mon + 6 * DAY_MS, end) })
-  }
+  let mon = last - 10 * 7 * DAY_MS
+  for (let i = 0; i < 11; i++, mon += 7 * DAY_MS) out.push({ a: mon, b: mon + 6 * DAY_MS })
   return out
 }
 

@@ -1,9 +1,21 @@
 {
-  "$comment": "A lens is a dashboard page. Add one by appending a block: give it an id (becomes the URL hash), a nav group, a default period, four hero tiles and the metric sections that render on each vendor card. Every metric id must exist in src/metrics/registry.tsx.",
+  "$comment": "A lens is a dashboard page. Add one by appending a block: give it an id (becomes the URL hash), a nav group, a default period, the hero tiles and the metric sections that render on each vendor card. The hero strip stays one row at any count. Optional portfolioSections render full width below the vendor grid, for metrics that only mean something across vendors. Every metric id must exist in src/metrics/registry.ts.",
   "navGroups": [
-    { "id": "vendor-management",   "label": "Vendor Management",   "icon": "bars" },
-    { "id": "delivery-management", "label": "Delivery Management", "icon": "pie" },
-    { "id": "finance-management",  "label": "Finance Management",  "icon": "db" }
+    {
+      "id": "vendor-management",
+      "label": "Vendor Management",
+      "icon": "bars"
+    },
+    {
+      "id": "delivery-management",
+      "label": "Delivery Management",
+      "icon": "pie"
+    },
+    {
+      "id": "finance-management",
+      "label": "Finance Management",
+      "icon": "db"
+    }
   ],
   "lenses": [
     {
@@ -13,8 +25,48 @@
       "title": "Vendor Performance",
       "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
       "defaultPeriod": "Yearly",
-      "hero": ["capacityUtilization", "costAtRisk", "atRiskVendors", "slaCompliance"],
-      "sections": ["vendorScore", "capacityUtilization", "outputRate", "slaCompliance", "headcountByRole", "riskStatus"]
+      "hero": [
+        "capacityUtilization",
+        "costAtRisk",
+        "atRiskVendors",
+        "slaCompliance"
+      ],
+      "sections": [
+        "vendorScore",
+        "costAtRisk",
+        "capacityUtilization",
+        "outputRate",
+        "slaCompliance",
+        "headcountByRole"
+      ],
+      "designationStrip": false
+    },
+    {
+      "id": "deliveryPerformance",
+      "navGroup": "delivery-management",
+      "navLabel": "Delivery Performance",
+      "title": "Delivery Performance",
+      "subtitle": "See whether the work is landing before it becomes an {escalation}, and what the shortfall is costing.",
+      "defaultPeriod": "Yearly",
+      "hero": [
+        "financialImpact",
+        "fteEquivalent",
+        "slaCompliance",
+        "projectsAtRisk",
+        "contractValueAtRisk"
+      ],
+      "sections": [
+        "deliveryPredictability",
+        "outputRate",
+        "contractBurn",
+        "penaltyExposure"
+      ],
+      "portfolioSections": [
+        "vendorDependency",
+        "consolidationLevers",
+        "slaRiskSummary"
+      ],
+      "designationStrip": true
     },
     {
       "id": "capacityUtilizationHealth",
@@ -23,25 +75,65 @@
       "title": "Capacity & Utilization",
       "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
       "defaultPeriod": "Weekly",
-      "hero": ["effectiveUtilization", "idleCapacity", "overUtilizedEmployee", "underUtilizedEmployee"],
-      "sections": ["effectiveUtilization", "idleCost", "highRateUtilization", "productiveVsNonProductive"]
+      "hero": [
+        "effectiveUtilization",
+        "idleCapacity",
+        "overUtilizedEmployee",
+        "underUtilizedEmployee"
+      ],
+      "sections": [
+        "effectiveUtilization",
+        "idleCost",
+        "highRateUtilization",
+        "productiveVsNonProductive"
+      ],
+      "designationStrip": false
     },
     {
       "id": "costEfficiency",
       "navGroup": "finance-management",
       "navLabel": "Cost Efficiency",
       "title": "Cost Efficiency",
-      "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
+      "subtitle": "Quantify how much vendor spend converts into productive work, and what's lost to {leakage} and idle capacity.",
       "defaultPeriod": "Weekly",
-      "hero": ["billablePortfolioCost", "capacityUtilization", "costAtRisk", "slaCompliance"],
-      "sections": ["billablePortfolioCost", "capacityUtilization", "leakageSummary", "slaCompliance"]
+      "hero": [
+        "leakageValue",
+        "capacityUtilization",
+        "hoursNotDelivered",
+        "fteEquivalent",
+        "contractRenewals"
+      ],
+      "sections": [
+        "partnerEfficiency",
+        "capacityUtilization",
+        "leakageSummary",
+        "overtimeIntegrity"
+      ],
+      "portfolioSections": [
+        "consolidationLevers"
+      ],
+      "designationStrip": true
     }
   ],
   "detail": {
     "title": "Vendor detail",
     "subtitle": "Shows the overall vendor performance across different metrics.",
     "defaultPeriod": "Yearly",
-    "kpis": ["totalHeadcount", "capacityUtilization", "slaCompliance", "costAtRisk", "effectiveUtilization", "idleCapacity", "overUtilizedEmployee", "underUtilizedEmployee"],
-    "panels": ["billableCostTrend", "idleCost", "slaCompliance", "effectiveUtilization"]
+    "kpis": [
+      "totalHeadcount",
+      "capacityUtilization",
+      "slaCompliance",
+      "costAtRisk",
+      "effectiveUtilization",
+      "idleCapacity",
+      "overUtilizedEmployee",
+      "underUtilizedEmployee"
+    ],
+    "panels": [
+      "billableCostTrend",
+      "idleCost",
+      "slaCompliance",
+      "effectiveUtilization"
+    ]
   }
 }

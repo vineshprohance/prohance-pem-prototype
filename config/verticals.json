@@ -1,13 +1,7 @@
 {
-  "$comment": "Verticals shown in the filter bar. A vendor belongs to one vertical through its 'vertical' id. Selecting only a vertical with no vendors gives the empty state, which is what the product does. The live instance now shows two verticals; assign vendors to the second one in vendors.json as you get its data.",
+  "$comment": "Verticals shown in the filter bar. A vendor belongs to one vertical through its 'vertical' id. The filter bar will not let you clear the last vertical, so the page is never empty.",
   "verticals": [
-    {
-      "id": "healthcare",
-      "name": "Healthcare"
-    },
-    {
-      "id": "bfsi",
-      "name": "Banking & Financial Services"
-    }
+    { "id": "healthcare", "name": "Healthcare" },
+    { "id": "services",   "name": "Services" }
   ]
 }

@@ -3,16 +3,22 @@
   --line:rgba(0,0,0,0.12); --line-soft:#E5E7EB; --line-inner:#EAECF0;
   --ink:#181D27; --ink-strong:#101828; --ink-mid:#414651; --ink-soft:#535862;
   --muted:#667085; --muted-2:#98A2B3; --slate:#344054;
-  --blue:#005EEB; --blue-chip:#1570EF; --blue-bar:#2563EB; --blue-line:#496CEB;
+  --blue:#005EEB; --blue-chip:#1570EF; --blue-bar:#4562EA; --blue-line:#4562EA;
   --blue-alt:#4562EA; --blue-pale:#D3E2FD; --grey-bar:#D1D5DB;
   --green:#12B86A; --green-2:#16A34A; --amber:#EBAA07; --red:#F04337; --red-2:#DC2626;
-  --orange:#DC6803; --orange-line:#F1BB87;
+  --orange:#DC6803; --orange-mid:#EFA25B; --orange-line:#F1BB87;
   --grid:#E6E6E6;
   --hdr-strip:#F4F4F6;
   --font:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
   color-scheme:light;
 }
 *{box-sizing:border-box}
+/* No `scrollbar-gutter: stable` here, though it would stop a scrollbar's
+   arrival narrowing every chart's container after those charts have measured
+   themselves. It reserves 15px on every screen, and 1180 minus the rail minus
+   15 is under the 1100 the sheet needs, so the iPad would render at 99.9%
+   instead of 100%. The stale width is handled where it cannot cost layout:
+   `.chart` clips horizontally and `useMeasure` re-reads after every render. */
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--blue-chip);outline-offset:2px;border-radius:4px}
@@ -27,13 +33,15 @@ button{font-family:inherit;cursor:pointer}
 .brand{font-weight:700;font-size:17px;letter-spacing:.5px;color:#0B7285;display:none;white-space:nowrap}
 .brand span{color:#12B5C9}
 .rail.open .brand{display:block}
-.rail-toggle{width:26px;height:26px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:6px}
+.rail-toggle{width:34px;height:34px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:6px}
 .rail-toggle:hover{background:#F2F4F7}
 .rail-icons{display:flex;flex-direction:column;gap:6px;padding:4px 0;align-items:center}
 .rail.open .rail-icons{display:none}
 .ricon{width:36px;height:36px;display:grid;place-items:center;border:0;background:transparent;border-radius:8px;color:var(--muted)}
 .ricon:hover{background:#F2F4F7}
 .ricon.on{color:var(--blue-chip);background:#EFF6FF}
+.ricon.out{color:var(--red)}
+.ricon[aria-disabled="true"],.fl[aria-disabled="true"]{cursor:default}
 .nav{display:none;flex-direction:column;padding:2px 8px;gap:1px;overflow-y:auto}
 .rail.open .nav{display:flex}
 .nav-group{border:0;background:transparent;display:flex;align-items:center;gap:7px;padding:8px 6px;border-radius:7px;
@@ -45,12 +53,16 @@ button{font-family:inherit;cursor:pointer}
 .nav-item{border:0;background:transparent;text-align:left;padding:7px 8px 7px 28px;border-radius:7px;font-size:12.5px;color:var(--ink-mid);width:100%;white-space:nowrap}
 .nav-item:hover{background:#F6F7F9}
 .nav-item.on{background:#EDF4FF;color:var(--blue-chip);font-weight:600}
-.rail-foot{margin-top:auto;padding:8px;display:flex;flex-direction:column;gap:2px}
-.rail.open .rail-foot .fl{display:flex}
-.fl{display:none;align-items:center;gap:9px;padding:8px;border-radius:7px;font-size:13px;color:var(--ink-mid);border:0;background:transparent;width:100%;text-align:left}
+.rail-foot{margin-top:auto;padding:8px;display:none;flex-direction:column;gap:2px}
+.rail.open .rail-foot{display:flex}
+
+.fl{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:7px;font-size:13px;
+  color:var(--ink-mid);border:0;background:transparent;width:100%;text-align:left;min-height:38px}
 .fl:hover{background:#F6F7F9}
 .fl.out{color:var(--red)}
-.rail-icons-foot{display:flex;flex-direction:column;align-items:center;gap:4px}
+.rail-icons-foot{display:flex;flex-direction:column;align-items:center;gap:4px;
+  margin-top:auto;padding:8px 0 12px}
+.rail-icons-foot .avatar{margin-top:8px}
 .rail.open .rail-icons-foot{display:none}
 .avatar-row{display:flex;align-items:center;gap:9px;padding:9px 6px;border-top:1px solid var(--line-soft);margin-top:4px}
 .avatar{width:30px;height:30px;border-radius:50%;background:#E4E7EC;color:#475467;display:grid;place-items:center;
@@ -60,7 +72,7 @@ button{font-family:inherit;cursor:pointer}
 .rail.open .avatar-name{display:block}
 
 .main{flex:1;min-width:0;overflow-x:auto}
-.sheet{min-width:1260px;padding:22px 26px 40px}
+.sheet{min-width:1100px;padding:22px 26px 40px}
 
 /* ---------- page head ---------- */
 .phead{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
@@ -71,43 +83,109 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 
 /* ---------- cards ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}
-.kpi{padding:15px 16px;display:flex;flex-direction:column;gap:2px;min-height:118px}
-.kpi-label{font-size:15px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px}
-.kpi-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1}
-.kpi-val{font-size:30px;font-weight:600;color:var(--ink);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+/* The hero strip is always one row, however many tiles the lens asks for.
+   --kpi-n comes from the lens config; each tile is its own container, so a
+   narrow tile reflows internally instead of the strip wrapping to a second
+   row. flex-wrap on .kpi-row is the fallback where @container is missing. */
+.kpis{display:grid;grid-template-columns:repeat(var(--kpi-n,4),minmax(0,1fr));gap:16px;
+  margin-bottom:16px;position:relative;z-index:25}
+.kpi{padding:15px 16px;display:flex;flex-direction:column;gap:2px;min-height:118px;
+  container-type:inline-size}
+/* block, not flex, so the info icon flows with the last word instead of
+   claiming a line of its own. The reserve is the tallest label in the strip,
+   measured by HeroStrip, so every tile's number starts at the same y whatever
+   the label length; the literal is two lines, the common case, for the frame
+   before the measurement lands. */
+.kpi-label{font-size:15px;font-weight:600;color:var(--ink);line-height:1.3;
+  min-height:var(--kpi-label-h,39px)}
+.kpi-label .info-wrap{vertical-align:-1px;margin-left:2px}
+/* block, so its height is the label's wrapped height to the pixel and the
+   strip can measure it without the reserve it is about to set feeding back in */
+.kpi-label > .kl{display:block}
+/* the row hugs its content rather than absorbing the card's slack, so a tile
+   with no sparkline starts its number at the same y as one that has both */
+.kpi-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex:0 0 auto;flex-wrap:wrap}
+.kpi .delta{margin-top:auto;min-height:17px}
+/* every tile's number occupies the same box, at the sparkline's own height,
+   so a tile with a sparkline beside its number, and a tile whose number is a
+   button with a chip beside it, both line up with the plain ones */
+.kpi-val{font-size:30px;font-weight:600;color:var(--ink);letter-spacing:-.4px;
+  font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;min-height:44px}
 .kpi-spark{width:120px;height:44px;flex:0 0 auto}
-.delta{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+@container (max-width:268px){
+  .kpi-label{font-size:14px;min-height:var(--kpi-label-h,37px)}
+  .kpi-row{flex-direction:column;align-items:flex-start;gap:2px}
+  .kpi-val{font-size:26px}
+  .kpi-spark{width:100%;height:32px}
+}
+@container (max-width:196px){
+  .kpi-val{font-size:23px}
+}
+
+/* a tile whose number opens a list: Upcoming Contract Renewals */
+.kpi-val-wrap{position:relative}
+.kpi-val.as-btn{border:0;background:transparent;padding:0;font-family:inherit;text-align:left;
+  cursor:pointer;line-height:1.15;display:inline-flex;align-items:center;gap:7px;
+  min-height:44px;touch-action:manipulation}
+.kpi-val.as-btn .cue{font-size:12px;font-weight:600;color:var(--blue-chip);
+  border:1px solid #CFE0FB;background:#EFF6FF;border-radius:6px;padding:3px 8px;white-space:nowrap}
+.kpi-val.as-btn:hover{color:var(--blue-chip)}
+.kpi-val.as-btn:hover .cue{background:#DEEBFE;border-color:#B6D2F8}
+.kpi-val.as-btn[aria-expanded="true"] .cue{background:var(--blue-chip);border-color:var(--blue-chip);color:#fff}
+.kpi-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:80;min-width:250px;
+  background:#fff;border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;
+  box-shadow:0 10px 26px rgba(16,24,40,.16)}
+.kpi-pop-t{font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  color:var(--muted-2);margin-bottom:6px}
+.kpi-pop-r{display:flex;justify-content:space-between;gap:14px;padding:5px 0;font-size:13px;
+  color:var(--ink-mid);border-top:1px solid var(--line-inner)}
+.kpi-pop-r:first-of-type{border-top:0}
+.kpi-pop-r b{font-weight:600;color:var(--ink-strong);white-space:nowrap}
+.kpis .kpi:last-child .kpi-pop{left:auto;right:0}
+/* on a narrow tile the period phrase drops to its own line rather than
+   breaking the figure in half across two */
+.delta{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.delta b,.delta .dsuf{white-space:nowrap}
 .delta b{font-weight:500}
-.delta.up b{color:var(--green-2)} .delta.down b{color:var(--red-2)}
+.delta.t-good b{color:var(--green-2)} .delta.t-bad b{color:var(--red-2)}
+.delta.t-good svg{color:var(--green-2)} .delta.t-bad svg{color:var(--red-2)}
 
 /* ---------- filter bar ---------- */
 .filters{padding:14px 16px;margin-bottom:16px;position:relative;z-index:20}
-.frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.frow{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .frow+.frow{margin-top:12px}
-.flabel{font-size:14px;font-weight:600;color:#555;padding:8px 8px 8px 0;flex:0 0 auto}
+.flabel{font-size:14px;font-weight:600;color:#555;padding:8px 6px 8px 0;flex:0 0 auto}
 .seg{display:inline-flex;border:1px solid var(--line-soft);border-radius:8px;overflow:hidden;background:#fff}
-.seg button{border:0;background:transparent;padding:8px 16px;font-size:14px;font-weight:600;color:#555;line-height:normal}
+.seg button{border:0;background:transparent;padding:10px 12px;font-size:14px;font-weight:600;color:#555;line-height:normal;min-height:40px;touch-action:manipulation}
 .seg button+button{border-left:1px solid var(--line-soft)}
 .seg button.on{background:#EEEEEE;color:var(--ink-mid)}
 .picker{position:relative}
-.pick-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:190px;
-  border:1px solid var(--line-soft);background:#fff;border-radius:8px;padding:9px 12px;font-size:14px;color:var(--muted);text-align:left}
-.pick-btn.wide{min-width:200px}
+.pick-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:172px;
+  border:1px solid var(--line-soft);background:#fff;border-radius:8px;padding:10px 12px;font-size:14px;
+  color:var(--muted);text-align:left;min-height:42px;touch-action:manipulation}
+.pick-btn .cv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-btn.wide{min-width:196px}
 .pick-btn:hover{border-color:#B9C0CC}
 .pick-btn .cv{color:var(--muted)}
 .pop{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line-soft);
   border-radius:10px;box-shadow:0 10px 26px rgba(16,24,40,.13);padding:10px;z-index:60;min-width:186px}
 .pop.hidden{display:none}
 .pop-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px;font-size:14px;font-weight:500;color:var(--ink-mid)}
-.pop-nav{border:0;background:transparent;color:var(--muted-2);padding:2px 6px;border-radius:5px;font-size:15px;line-height:1}
+.pop-nav{border:0;background:transparent;color:var(--muted-2);padding:7px 11px;border-radius:5px;font-size:16px;line-height:1;touch-action:manipulation}
+.pop-nav:disabled{color:#D8DCE3;cursor:default}
+.pop-nav:disabled:hover{background:transparent}
 .pop-nav:hover{background:#F2F4F7;color:var(--ink-mid)}
 .ygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.ygrid button{border:0;background:transparent;padding:9px 0;border-radius:8px;font-size:13px;color:var(--muted-2)}
+.ygrid button{border:0;background:transparent;padding:11px 0;border-radius:8px;font-size:13px;color:var(--muted-2);touch-action:manipulation}
+.ygrid button:disabled{color:#D8DCE3;cursor:default}
+.ygrid button:disabled:hover{background:transparent}
 .ygrid button:hover{background:#F2F4F7;color:var(--ink-mid)}
 .ygrid button.on{background:var(--blue-chip);color:#fff}
 .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
-.qgrid button{border:0;background:transparent;padding:9px 6px;border-radius:8px;display:flex;flex-direction:column;gap:2px;align-items:center}
+.qgrid button{border:0;background:transparent;padding:11px 6px;border-radius:8px;display:flex;flex-direction:column;gap:2px;align-items:center;touch-action:manipulation}
+.qgrid button:disabled{opacity:.4;cursor:default}
+.qgrid button:disabled:hover{background:transparent}
 .qgrid button b{font-size:13px;font-weight:600;color:var(--ink-mid)}
 .qgrid button i{font-size:11px;font-style:normal;color:var(--muted-2)}
 .qgrid button:hover{background:#F2F4F7}
@@ -117,27 +195,32 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .cal .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;padding:2px 0 4px}
 .cal .dow span{text-align:center;font-size:11px;color:var(--muted-2)}
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
-.cgrid button{border:0;background:transparent;padding:6px 0;font-size:12px;color:var(--ink-mid);border-radius:0}
+.cgrid button{border:0;background:transparent;padding:9px 0;font-size:12px;color:var(--ink-mid);border-radius:0;touch-action:manipulation}
+.cgrid button:disabled{color:#CDD2DA;cursor:default}
+.cgrid button:disabled:hover{background:transparent}
 .cgrid button:hover:not(.sel):not(.mid){background:#F2F4F7}
 .cgrid button.blank{visibility:hidden}
 .cgrid button.mid{background:#DBEAFE;color:var(--blue-chip)}
 .cgrid button.sel{background:var(--blue-chip);color:#fff;border-radius:8px}
-.opt{display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:6px;font-size:13px;color:var(--ink-mid);cursor:pointer}
+.opt{display:flex;align-items:center;gap:9px;padding:10px 6px;border-radius:6px;font-size:13px;color:var(--ink-mid);cursor:pointer;min-height:40px;touch-action:manipulation}
+.opt:has(input:disabled){cursor:default;color:var(--muted)}
 .opt:hover{background:#F6F7F9}
-.opt input{accent-color:var(--blue-chip);width:15px;height:15px;margin:0;cursor:pointer}
+.opt input{accent-color:var(--blue-chip);width:17px;height:17px;margin:0;cursor:pointer}
+.opt input:disabled{cursor:default;opacity:.65}
 .pop-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:9px;margin-top:4px;border-top:1px solid var(--line-inner)}
-.chips{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.chip{border:0;background:transparent;font-size:14px;font-weight:500;color:var(--muted);padding:0}
+.chips{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.chip{border:0;background:transparent;font-size:14px;font-weight:500;color:var(--muted);
+  padding:9px 5px;min-width:34px;touch-action:manipulation}
 .chip.on{color:var(--blue-chip)}
 .chip:hover{color:var(--blue-chip)}
 .spacer{margin-left:auto;display:flex;gap:10px}
-.btn{border-radius:8px;font-size:14px;font-weight:600;padding:10px 18px;border:1px solid transparent;line-height:normal}
+.btn{border-radius:8px;font-size:14px;font-weight:600;padding:11px 18px;border:1px solid transparent;line-height:normal;min-height:42px;touch-action:manipulation}
 .btn.primary{background:var(--blue);color:#fff;border-color:rgba(255,255,255,.12)}
 .btn.primary:hover{background:#0052CC}
 .btn.primary:disabled{opacity:.45;cursor:default}
 .btn.ghost{background:#fff;color:var(--slate);border-color:#D0D5DD;padding:10px 16px}
 .btn.ghost:hover{background:#F9FAFB}
-.btn.sm{padding:7px 14px;font-size:13px}
+.btn.sm{padding:9px 14px;font-size:13px;min-height:38px}
 
 /* ---------- vendor columns ---------- */
 .vgrid{display:grid;column-gap:16px;row-gap:0;align-items:stretch}
@@ -152,7 +235,11 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .sect-t .aside{font-size:13px;color:var(--ink-mid)}
 .sect-d{font-size:12px;color:var(--muted);margin:5px 0 0;line-height:1.5}
 .info{width:14px;height:14px;color:var(--muted-2);flex:0 0 auto;display:block}
-.info-btn{border:0;background:transparent;padding:0;margin:0;line-height:0;display:inline-flex;align-items:center;cursor:help;border-radius:4px;flex:0 0 auto}
+.info-btn{border:0;background:transparent;padding:0;margin:0;line-height:0;display:inline-flex;
+  align-items:center;cursor:help;border-radius:4px;flex:0 0 auto;position:relative;
+  touch-action:manipulation}
+/* a 38px tap target around a 14px icon, without moving anything on the page */
+.info-btn::after{content:"";position:absolute;inset:-12px}
 .info-btn:hover .info{color:var(--muted)}
 .info-btn:focus-visible{outline:2px solid var(--blue-chip);outline-offset:2px}
 .bignum{font-size:40px;font-weight:700;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums}
@@ -164,6 +251,11 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .badge.watch{color:var(--amber);border-color:var(--amber)} .badge.watch .dot{background:var(--amber)}
 .badge.critical{color:var(--red);border-color:var(--red)} .badge.critical .dot{background:var(--red)}
 .scorerow{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:12px}
+/* leakage and overtime: number, caption, then badge and delta as one unit, so
+   every card in the row breaks at the same place */
+.statrow{align-items:center;gap:10px;row-gap:8px}
+.statcap{font-size:13px;color:var(--ink-mid)}
+.statmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .scoremeta{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
 .trendhead{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
 .trendhead .lt{font-size:12px;font-weight:500;color:var(--ink-mid);font-style:italic}
@@ -179,19 +271,77 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .rolerow{margin-top:11px}
 .rolerow .rl{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--ink-mid)}
 .rolerow .rl b{font-weight:600;color:var(--ink-strong)}
+/* a location's own hourly rate, and the amber bar that marks the expensive ones */
+.rolerow .rate{font-style:normal;font-size:11px;color:var(--muted-2);margin-left:5px}
+.rolerow.hi .rl{color:var(--ink-strong);font-weight:600}
+.rolerow.hi .bar i{background:var(--orange)}
+/* a stacked horizontal bar and its legend: the same progress-bar idiom as the
+   location rows, split into named parts. Replaces the long label-value lists
+   that made Partner Efficiency and Leakage Breakdown the tallest cards. */
+.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:12px;
+  background:var(--line-inner)}
+.stack i{display:block;height:100%}
+.stack i.rest{background:var(--line-inner)}
+.stacklg{display:flex;flex-direction:column;gap:5px;margin-top:9px}
+.slg{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-mid)}
+.slg .sw{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+.slg span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slg b{font-weight:600;color:var(--ink-strong);font-variant-numeric:tabular-nums;white-space:nowrap}
+.slg em{font-style:normal;color:var(--muted-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* the summary lines under the legend: same rhythm as a legend row, ruled off,
+   so the card does not need a second boxed list under the first */
+.slg.foot{border-top:1px solid var(--line-inner);padding-top:6px;margin-top:2px}
+.slg.foot.strong{color:var(--ink-strong);font-weight:600}
+.slg.foot + .slg.foot{border-top:0;padding-top:0;margin-top:0}
+/* project risk, one row per vendor. The chips are the same badge pills the
+   risk list used, carrying the project name instead of the word "At risk". */
+.rchips{margin-top:4px}
+.rcrow{padding:10px 0;border-top:1px solid var(--line-inner)}
+.rcrow:first-child{border-top:0}
+.rcline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rcv{font-size:14px;font-weight:600;color:var(--ink-strong);min-width:150px}
+.rccount{font-size:12.5px;color:var(--muted)}
+.rccount.bad{color:var(--red-2);font-weight:600}
+.rcchips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.rcchip{font-weight:500}
+button.rcchip{cursor:pointer;font-family:inherit;touch-action:manipulation}
+button.rcchip:hover{filter:brightness(.97)}
+button.rcchip[aria-expanded="true"]{outline:2px solid var(--red-2);outline-offset:1px}
+.rcnote{margin:8px 0 0;font-size:12.5px;color:var(--ink-mid);line-height:1.5;
+  border-left:3px solid var(--line-soft);padding-left:10px}
 .kv{border:1px solid var(--line-soft);border-radius:9px;padding:4px 12px;margin-top:11px}
 .kv div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:13px;color:var(--ink-mid)}
 .kvlabel{display:inline-flex;align-items:center;gap:6px}
 .kv div b{font-weight:600;color:var(--ink-strong);font-variant-numeric:tabular-nums}
-.riskrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px}
-.riskbig{font-size:54px;font-weight:700;color:var(--orange);line-height:1.05}
-.riskcond{text-align:right;font-size:13px;color:var(--ink-mid);line-height:1.5}
 .nodata{display:grid;place-items:center;min-height:120px;color:var(--muted);font-size:14px}
-.chart{margin-top:10px;width:100%}
-.chart svg{display:block;width:100%;height:auto;overflow:visible}
+/* Clipped on both axes. `labelFit` only tilts a label that fits inside the axis
+   margin, so nothing needs to paint outside the box any more, and clipping is
+   what guarantees a stale measured width or an unforeseen label can never run
+   the axis out of a card again. Chart tooltips are portalled to the body, so
+   clipping here costs nothing. */
+.chart{margin-top:10px;width:100%;overflow:clip}
+.chart svg{display:block;width:100%;max-width:100%;height:auto;overflow:visible}
 .hotpt{cursor:crosshair}
 .kpi-spark .hotpt{cursor:default}
 .xcap{text-align:center;font-size:11px;font-style:italic;color:var(--muted);margin-top:2px}
+
+/* ---------- portfolio band ---------- */
+/* A metric that only means something across vendors, so it cannot sit in a
+   vendor column. Full width, below the grid, driven by the same filter bar. */
+.band{padding:16px 16px 18px;margin-bottom:16px}
+.band-t{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.band-t h3{font-size:15px;font-weight:600;color:var(--ink-strong);margin:0;
+  display:flex;align-items:center;gap:6px}
+.band-cmp{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted)}
+.band-cmp select{font-family:inherit;font-size:13px;font-weight:400;color:var(--ink-mid);
+  padding:8px 28px 8px 10px;border:1px solid var(--line-soft);border-radius:8px;background:#fff;
+  appearance:none;min-height:38px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 9px center}
+.band-legend{margin-top:12px}
+.band-legend .lg{font-size:12.5px;color:var(--ink-mid)}
+.band-insight{margin:4px 0 0;font-size:13px;line-height:1.55;color:var(--ink-soft);
+  border-left:3px solid var(--blue-pale);padding:2px 0 2px 11px}
 
 /* ---------- vendor profiles ---------- */
 .vp-head{margin:26px 0 12px}
@@ -220,14 +370,25 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .dtrend{padding:16px}
 .dkpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}
 .dkpi{padding:15px 16px;min-height:112px;display:flex;flex-direction:column;gap:6px}
-.dkpi .t{font-size:15px;font-weight:600;color:var(--ink)}
-.dkpi .b{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1}
-.dkpi .v{font-size:28px;font-weight:600;color:var(--ink);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+/* same reserve as the lens tiles: the title box is the tallest title in the
+   strip, so every number on the row starts at the same y, and the number's own
+   box is the sparkline's height, so a tile with one lines up with a tile
+   without. Measured by VendorDetail. */
+.dkpi .t{font-size:15px;font-weight:600;color:var(--ink);line-height:1.3;
+  min-height:var(--dkpi-title-h,20px)}
+.dkpi .t > .kl{display:block}
+.dkpi .b{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex:0 0 auto;min-height:44px}
+.dkpi .delta{margin-top:auto;min-height:17px}
+.dkpi .v{font-size:28px;font-weight:600;color:var(--ink);letter-spacing:-.4px;
+  font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;min-height:44px}
 .dhalf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
 .dpanel{padding:16px}
 .dpanel h3{font-size:15px;font-weight:600;color:var(--ink-strong);margin:0;display:flex;align-items:center;gap:6px}
 .dpanel .sect-d{margin-top:4px}
 .money{font-size:34px;font-weight:700;color:var(--green);letter-spacing:-.8px;margin-top:10px;font-variant-numeric:tabular-nums}
+/* a loss is not good news, so it does not print green */
+.money.k{color:var(--ink-strong)}
 
 /* ---------- tooltip ---------- */
 #tip{position:fixed;z-index:200;background:#2E3238;color:#fff;font-size:12px;padding:5px 9px;border-radius:6px;
@@ -261,12 +422,16 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 /* ---------- additions for the React build ---------- */
 /* info tooltip: a real popover anchored to the button, keyboard reachable */
 .info-wrap{position:relative;display:inline-flex;align-items:center}
-.info-pop{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);
+/* rendered in a portal in viewport coordinates, so no ancestor with
+   overflow:hidden can clip it. Flips below the icon near the top of the page. */
+.info-pop{position:fixed;transform:translate(-50%,-100%);
   background:#101828;color:#fff;font-size:12px;font-weight:400;line-height:1.45;
-  padding:8px 10px;border-radius:8px;width:max-content;max-width:250px;z-index:90;
+  padding:8px 10px;border-radius:8px;width:max-content;max-width:250px;z-index:200;
   box-shadow:0 8px 24px rgba(16,24,40,.18);pointer-events:none;white-space:normal;text-align:left}
 .info-pop::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
   border:5px solid transparent;border-top-color:#101828}
+.info-pop.below{transform:translate(-50%,0)}
+.info-pop.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#101828}
 
 /* chart hover card, rendered in a portal so cards never clip it */
 .chart-tip{position:fixed;transform:translate(-50%,calc(-100% - 10px));
@@ -314,3 +479,142 @@ h1{font-size:24px;line-height:32px;font-weight:600;margin:0;color:var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.primary:disabled{background:#B9C6DC;border-color:#B9C6DC}
 .btn.ghost:disabled{color:#98A2B3;border-color:#E4E7EC;background:#fff}
+
+/* ---------- Cost Loss drilldown ---------- */
+/* A replica of the shipped build's slide-out: it opens from the chevron on the
+   Cost Loss tile, carries its own period selection, and scopes to whatever the
+   page's vendor filter is showing. */
+.kpi{position:relative}
+.kpi-drill{position:absolute;top:8px;right:8px;width:34px;height:34px;display:grid;
+  place-items:center;border:0;background:transparent;color:var(--muted-2);border-radius:7px;
+  touch-action:manipulation;z-index:2}
+.kpi-drill .chev{transform:rotate(-90deg)}
+.kpi-drill:hover{background:#F2F4F7;color:var(--blue-chip)}
+.kpi-label{padding-right:30px}
+
+.drawer-veil{position:fixed;inset:0;background:rgba(16,24,40,.32);z-index:300;
+  animation:veilIn .18s ease}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;background:#fff;
+  z-index:301;display:flex;flex-direction:column;box-shadow:-10px 0 34px rgba(16,24,40,.22);
+  animation:drawerIn .22s cubic-bezier(.22,.61,.36,1)}
+@keyframes veilIn{from{opacity:0}to{opacity:1}}
+@keyframes drawerIn{from{transform:translateX(24px);opacity:.4}to{transform:none;opacity:1}}
+.drawer-head{display:flex;align-items:flex-start;gap:12px;padding:18px 18px 14px;
+  border-bottom:1px solid var(--line-inner);flex:0 0 auto}
+.drawer-head h2{font-size:17px;font-weight:600;color:var(--ink);margin:0}
+.drawer-head p{font-size:12.5px;line-height:1.5;color:var(--ink-soft);margin:5px 0 0;max-width:300px}
+.drawer-x{margin-left:auto;width:34px;height:34px;display:grid;place-items:center;border:0;
+  background:transparent;color:var(--muted);border-radius:8px;flex:0 0 auto;touch-action:manipulation}
+.drawer-x:hover{background:#F2F4F7;color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:16px 18px 28px;-webkit-overflow-scrolling:touch}
+
+.dl-card{border:1px solid var(--line-soft);border-radius:12px;padding:13px 14px;margin-bottom:16px}
+.dl-label{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px}
+.dl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;flex-wrap:wrap}
+.dl-val{font-size:28px;font-weight:600;color:var(--ink);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.dl-card .kv{margin-top:12px}
+.dl-filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.dl-filters .seg button{padding:9px 11px;font-size:13px;min-height:38px}
+.dl-filters .pick-btn{min-width:150px;font-size:13px}
+.dl-h{font-size:14px;font-weight:600;color:var(--ink-strong);margin:18px 0 2px}
+
+.dl-donut{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:10px}
+.dl-ring{position:relative;display:grid;place-items:center}
+.dl-ring-mid{position:absolute;text-align:center;line-height:1.25}
+.dl-ring-mid b{display:block;font-size:19px;font-weight:600;color:var(--ink-strong);
+  font-variant-numeric:tabular-nums}
+.dl-ring-mid span{font-size:11.5px;color:var(--muted)}
+.dl-legend{width:100%;display:flex;flex-direction:column;gap:2px}
+.dl-leg{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-mid);padding:5px 2px}
+.dl-leg i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.dl-leg b{margin-left:auto;font-weight:600;color:var(--ink-strong);font-variant-numeric:tabular-nums}
+.dl-leg em{font-style:normal;color:var(--muted);font-size:12.5px;min-width:42px;text-align:right}
+
+.dl-vendors{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.dl-vendor{display:flex;align-items:center;gap:10px;width:100%;text-align:left;min-height:52px;
+  border:1px solid var(--line-soft);background:#fff;border-radius:10px;padding:9px 12px;
+  font-family:inherit;touch-action:manipulation}
+.dl-vendor:hover{background:#F9FAFB;border-color:#D6DEEA}
+.dl-vendor .logo{width:26px;height:26px;flex:0 0 auto}
+.dl-vname{font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.dl-vendor b{margin-left:auto;font-size:13.5px;font-weight:600;color:var(--red-2);
+  font-variant-numeric:tabular-nums}
+.dl-pct{font-style:normal;font-size:12.5px;color:var(--muted);min-width:34px;text-align:right}
+.dl-vendor .chev{transform:rotate(-90deg);color:var(--muted-2);flex:0 0 auto}
+
+/* ---------- key-value rows with a second line ---------- */
+/* Leakage Breakdown, Overtime Integrity and Partner Efficiency all put money
+   under hours, so the row has two lines on the right rather than two columns. */
+.kv div b{display:flex;flex-direction:column;align-items:flex-end;line-height:1.3}
+.kv b.bad{color:var(--red-2)}
+.kvsub{font-style:normal;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:1px}
+.kv div.kvstrong{border-top:1px solid var(--line-soft);margin-top:2px;padding-top:8px}
+.kv div.kvstrong span{font-weight:600;color:var(--ink-strong)}
+
+/* ---------- Partner Efficiency headline pair ---------- */
+/* Workforce size on the left, the part of it you are not getting on the right.
+   The product owner asked for these two side by side and nothing between them. */
+.pepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
+.pepair > div{border:1px solid var(--line-soft);border-radius:9px;padding:9px 11px;min-width:0}
+.pepair span{display:block;font-size:12px;color:var(--muted);line-height:1.35;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pepair b{display:block;font-size:24px;font-weight:600;color:var(--ink-strong);
+  letter-spacing:-.3px;font-variant-numeric:tabular-nums;margin-top:2px}
+.pepair b.bad{color:var(--red-2)}
+
+/* ---------- vendor tier tag and designation strip ---------- */
+/* The tier is the client's own categorisation, strategic for project work and
+   tactical for day to day. No formula behind it. */
+.vtier{font-size:10.5px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  padding:3px 7px;border-radius:5px;flex:0 0 auto}
+.vtier.strategic{background:#EDF4FF;color:var(--blue-chip)}
+.vtier.tactical{background:#F2F4F7;color:var(--ink-mid)}
+
+/* Narrows a whole vendor column to one seniority level. Reuses the product's
+   tab component; scrolls sideways rather than wrapping when the column is
+   narrow, so the column height stays the same across vendors. */
+/* Wraps rather than scrolling. Five buttons with real words are wider than a
+   275px vendor column on an iPad, and a half-cut word reads as a bug where a
+   second row reads as a second row. Every vendor has the same designations, so
+   all three columns wrap identically and the grid rows stay aligned. */
+.vdesig{position:relative;z-index:1;min-width:0;margin:0 12px 10px;display:flex;gap:2px;
+  flex-wrap:wrap}
+.dtab{border:0;background:transparent;border-radius:7px;padding:7px 9px;font-size:12px;
+  font-weight:500;color:var(--muted);white-space:nowrap;flex:0 0 auto;min-height:34px;
+  touch-action:manipulation;transition:background .14s ease,color .14s ease}
+.dtab:hover{background:#F2F4F7;color:var(--ink-mid)}
+.dtab.on{background:#EDF4FF;color:var(--blue-chip);font-weight:600}
+
+/* ---------- Delivery ---------- */
+/* two bars on one scale, money above calendar. A longer budget bar is money
+   going out faster than the contract is running down, which is the whole
+   reading and needs no mark, no key and no sentence. */
+.burnpair{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.burnrow{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-mid)}
+.burnrow > span{flex:0 0 96px}
+.burnrow > .bar{flex:1 1 auto}
+.burnrow > b{flex:0 0 40px;text-align:right;font-weight:600;color:var(--ink-strong);
+  font-variant-numeric:tabular-nums}
+.burnrow .bar.over > i{background:var(--orange)}
+.burnrow .bar.term > i{background:var(--grey-bar)}
+/* a ring, not a bar. A horizontal share bar read as a progress bar; the whole
+   point of this metric is that the three shares are one whole. The ring sits
+   beside the number, which is how the Productive vs Non-Productive card already
+   arranges a donut. */
+.concrow{display:flex;align-items:center;gap:22px;margin-top:4px;flex-wrap:wrap}
+.concside{flex:1 1 320px;min-width:0}
+.lgsub{font-style:normal;color:var(--muted-2);margin-left:8px;font-variant-numeric:tabular-nums}
+.concbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-top:12px;gap:2px}
+.concbar > i{display:block;height:100%}
+.risklist{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.riskitem{border:1px solid var(--line-soft);border-left:3px solid var(--line-soft);
+  border-radius:9px;padding:10px 13px}
+.riskitem.bad{border-left-color:var(--red)}
+.riskitem.ok{border-left-color:var(--green)}
+.ri-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ri-title{font-size:14px;font-weight:600;color:var(--ink-strong)}
+.ri-meta{font-size:12.5px;color:var(--muted)}
+.ri-top .badge{margin-left:auto}
+.ri-note{margin:6px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-soft)}
+.burnwarn{font-size:12px;font-weight:600;color:var(--red-2)}

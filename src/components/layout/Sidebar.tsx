@@ -1,5 +1,15 @@
 import { NAV_GROUPS, LENSES, lensById, roleById, useStore } from '../../state/store.tsx'
-import { NAV_ICONS } from '../Icons.tsx'
+import { GearIcon, GridIcon, HelpIcon, NAV_ICONS, SignOutIcon } from '../Icons.tsx'
+
+/** The bottom block of the rail, exactly as the shipped build carries it:
+ *  four links and the signed-in user. They do nothing in the prototype, which
+ *  is why they are marked aria-disabled rather than pretending to navigate. */
+const FOOT = [
+  { label: 'Instances', icon: <GridIcon /> },
+  { label: 'Company Settings', icon: <GearIcon /> },
+  { label: 'Help', icon: <HelpIcon /> },
+  { label: 'Sign out', icon: <SignOutIcon />, out: true },
+]
 
 export function Sidebar() {
   const { s, d } = useStore()
@@ -64,6 +74,28 @@ export function Sidebar() {
         ))}
       </nav>
 
+      <div className="rail-icons-foot">
+        {FOOT.map(f => (
+          <button key={f.label} type="button" className={`ricon${f.out ? ' out' : ''}`}
+                  title={f.label} aria-label={f.label} aria-disabled="true">
+            {f.icon}
+          </button>
+        ))}
+        <div className="avatar" title="Product Manager" aria-label="Product Manager">PM</div>
+      </div>
+
+      <div className="rail-foot">
+        {FOOT.map(f => (
+          <button key={f.label} type="button" className={`fl${f.out ? ' out' : ''}`}
+                  aria-disabled="true">
+            {f.icon}{f.label}
+          </button>
+        ))}
+        <div className="avatar-row">
+          <div className="avatar" aria-hidden="true">PM</div>
+          <div className="avatar-name">Product Manager</div>
+        </div>
+      </div>
     </aside>
   )
 }

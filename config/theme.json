@@ -1,5 +1,5 @@
 {
-  "$comment": "Design tokens, mirrored into CSS custom properties at runtime. Change a value here and the whole UI follows.",
+  "$comment": "Design tokens, mirrored into CSS custom properties at runtime. Change a value here and the whole UI follows. The chart palette is deliberately short. Blue is anything measured, and every trend series on every page uses it. The three loss tones are only for the marks that ARE the loss: the segments inside a stacked bar, and a contract burning past its term. Grey is the remainder. The three vendorSeries hues appear ONLY where vendors compete on one chart, so a teal anywhere on a page means PH Operations and nothing else.",
   "font": "'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
   "color": {
     "page": "#F5F5F5",
@@ -21,14 +21,24 @@
     "grid": "#E6E6E6"
   },
   "chart": {
-    "score": "#496CEB",
+    "score": "#4562EA",
     "logged": "#D3E2FD",
     "productive": "#4562EA",
     "seriesGrey": "#D1D5DB",
-    "seriesBlue": "#2563EB",
-    "idle": "#F1BB87",
-    "money": "#4562EA"
+    "seriesBlue": "#4562EA",
+    "lossStrong": "#DC6803",
+    "lossMid": "#EFA25B",
+    "lossLight": "#F1BB87",
+    "idle": "#DC6803",
+    "money": "#4562EA",
+    "overtime": "#DC6803",
+    "rest": "#E4E7EC",
+    "vendorSeries": [
+      "#4562EA",
+      "#12B5C9",
+      "#F1BB87"
+    ]
   },
   "radius": 14,
-  "sheetMinWidth": 1260
+  "sheetMinWidth": 1100
 }

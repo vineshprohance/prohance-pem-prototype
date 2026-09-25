@@ -4,7 +4,7 @@ import lensCfg from '../../config/lenses.json' with { type: 'json' }
 import rolesCfg from '../../config/roles.json' with { type: 'json' }
 import verticalsCfg from '../../config/verticals.json' with { type: 'json' }
 import { VENDOR_NAMES, byName } from '../engine/dataset.ts'
-import type { Period } from '../engine/types.ts'
+import type { DateState, Period } from '../engine/types.ts'
 import type { AppState, DetailState, LensState } from './types.ts'
 
 /** Default Weekly window: the current week up to today. */
@@ -37,6 +37,8 @@ export function defaultLensState(lensId: string): LensState {
   return {
     period: cfg.defaultPeriod as Period,
     metric: 'All',
+    dimension: 'skillSet',
+    designation: {},
     verticals: VERTICALS.map(v => v.id),
     vendors: VENDOR_NAMES.slice(),
     applied: { metric: 'All', vendors: VENDOR_NAMES.slice() },
@@ -52,12 +54,19 @@ export function defaultDetailState(vendor: string): DetailState {
   }
 }
 
+export const defaultCostLossState = (): DateState => ({
+  period: 'Yearly' as Period,
+  ...baseDates(WEEK_A, WEEK_B),
+})
+
 export function initialState(): AppState {
   const role = roleById(rolesCfg.defaultRole)
   return {
     role: role.id,
     lens: role.defaultLens,
     detailVendor: null,
+    costLossOpen: false,
+    costLoss: null,
     openGroup: lensById(role.defaultLens).navGroup,
     openPop: null,
     staged: {},
@@ -75,6 +84,7 @@ export type Action =
   | { t: 'detail'; vendor: string; patch: Partial<DetailState> }
   | { t: 'resetLens'; id: string }
   | { t: 'resetDetail'; vendor: string }
+  | { t: 'costLoss'; patch: Partial<DateState> }
 
 function reducer(s: AppState, a: Action): AppState {
   switch (a.t) {
@@ -104,6 +114,8 @@ function reducer(s: AppState, a: Action): AppState {
       delete next[a.vendor]
       return { ...s, details: next, openPop: null }
     }
+    case 'costLoss':
+      return { ...s, costLoss: { ...(s.costLoss ?? defaultCostLossState()), ...a.patch } }
   }
 }
 
@@ -112,6 +124,7 @@ interface Ctx {
   d: React.Dispatch<Action>
   lensState: (id: string) => LensState
   detailState: (vendor: string) => DetailState
+  costLossState: () => DateState
 }
 
 const StoreCtx = createContext<Ctx | null>(null)
@@ -122,6 +135,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     s, d,
     lensState: id => s.lenses[id] ?? defaultLensState(id),
     detailState: v => s.details[v] ?? defaultDetailState(v),
+    costLossState: () => s.costLoss ?? defaultCostLossState(),
   }), [s])
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }

@@ -9,22 +9,22 @@ export const InfoIcon = () => (
 )
 
 export const ArrowUp = () => (
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--green-2)" strokeWidth={3} strokeLinecap="round">
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round">
     <line x1="12" y1="20" x2="12" y2="5" /><polyline points="5 11 12 4 19 11" />
   </svg>
 )
 export const ArrowDown = () => (
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--red-2)" strokeWidth={3} strokeLinecap="round">
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round">
     <line x1="12" y1="4" x2="12" y2="19" /><polyline points="5 13 12 20 19 13" />
   </svg>
 )
 export const TrendUp = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green-2)" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 17 9 11 13 15 21 7" /><polyline points="15 7 21 7 21 13" />
   </svg>
 )
 export const TrendDown = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-2)" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 7 9 13 13 9 21 17" /><polyline points="15 17 21 17 21 11" />
   </svg>
 )
@@ -41,6 +41,36 @@ export const BackArrow = () => (
 export const DrillIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <path d="M7 17 17 7" /><polyline points="9 7 17 7 17 15" />
+  </svg>
+)
+
+/* rail footer, matching the shipped build's bottom block */
+export const GridIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    {[4, 10.5, 17].map(y => [4, 10.5, 17].map(x => (
+      <circle key={`${x}-${y}`} cx={x} cy={y} r="1.6" />
+    )))}
+  </svg>
+)
+export const GearIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z" />
+  </svg>
+)
+export const HelpIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth={1.8} strokeLinecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="3.4" />
+    <path d="M4.9 4.9 9.6 9.6M14.4 14.4l4.7 4.7M19.1 4.9l-4.7 4.7M9.6 14.4l-4.7 4.7" />
+  </svg>
+)
+export const SignOutIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 )
 
@@ -102,6 +132,36 @@ const LOGOS: Record<string, JSX.Element> = {
 }
 
 export const VendorLogo = ({ logo }: { logo: string }) => LOGOS[logo] ?? LOGOS.generic
+
+/** The same ring, with a slice per vendor. Vendor Dependency Risk used a
+ *  horizontal share bar, which reads as a progress bar rather than as a split
+ *  of one whole. A ring says "this is all of the work, and this much of it sits
+ *  with one vendor" in one look. */
+export function DonutParts({ parts, size = 132 }: {
+  parts: { name: string; share: number; color: string }[]; size?: number
+}) {
+  const r = 26
+  const c = 2 * Math.PI * r
+  let at = 0
+  return (
+    <svg width={size} height={size} viewBox="0 0 72 72" role="img"
+         aria-label={parts.map(p => `${p.name} ${Math.round(p.share)}%`).join(', ')}>
+      {parts.map(p => {
+        const on = (c * Math.max(0, p.share)) / 100
+        const off = -(c * at) / 100
+        at += p.share
+        return (
+          <circle key={p.name} cx="36" cy="36" r={r} fill="none" stroke={p.color} strokeWidth={15}
+                  strokeDasharray={`${on.toFixed(2)} ${(c - on).toFixed(2)}`}
+                  strokeDashoffset={off.toFixed(2)}
+                  transform="rotate(-90 36 36)" className="donut-arc">
+            <title>{`${p.name}: ${p.share.toFixed(1)}%`}</title>
+          </circle>
+        )
+      })}
+    </svg>
+  )
+}
 
 export function Donut({ pct, a = 'var(--blue-alt)', b = 'var(--blue-pale)' }: {
   pct: number; a?: string; b?: string

@@ -1,0 +1,56 @@
+# Build the prototype and publish it to GitHub Pages.
+#
+# Pages serves the single-file build as index.html, so there is no base-path or
+# asset-resolution to get wrong: dist-standalone/ProHance-PEM.html is one
+# self-contained document. The Vite build runs first because the standalone is
+# assembled from it, and the engine and chart tests run before either, so a
+# broken number never reaches the URL.
+name: Publish prototype
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Guard the numbers
+        run: |
+          npm run test:engine
+          npm run test:charts
+      - name: Build the single-file prototype
+        run: npm run standalone
+      - name: Lay out the site
+        run: |
+          mkdir -p site
+          cp dist-standalone/ProHance-PEM.html site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -9,7 +9,7 @@ project honest and where each kind of change belongs.
 Current version is in `VERSION.md`. Add an entry there for anything that changes
 behaviour, one line, newest first.
 
-## The three rules
+## The four rules
 
 **1. Numbers come from the engine, never from a literal in a component.**
 There is exactly one source of data: a deterministic daily series per vendor in
@@ -19,13 +19,28 @@ percentage into a `.tsx` file, stop: the value belongs in a formula or in
 `config/vendors.json`.
 
 **2. `npm run verify` must stay green.**
-`test:engine` pins every headline figure to what the shipped ProHance build
-prints for Yearly 2026. `test:charts` pins the axis ladder and the column
+`test:engine` pins every headline figure for Yearly 2026 and the identities the
+Cost Efficiency page rests on, above all **Contract Value minus Billable
+Portfolio Cost equals Cost Loss**, per vendor and across the portfolio. If those
+three numbers stop agreeing, the page is telling three stories about the same
+money. `test:charts` pins the axis ladder and the column
 geometry. The Playwright suite drives every filter and guards every defect the
 September audit found. If a change moves one of those on purpose, update the
 expectation in the same commit and say why in `VERSION.md`.
 
-**3. Never put a CSS class on an SVG element without checking the stylesheet.**
+**3. No screen may ever print "No data available", and no percentage may ever
+exceed 100.**
+Production has empty cells for reasons a prototype does not get to borrow. Four
+things hold this: every calendar day carries data including weekends
+(`DAY_WEIGHT` in `dataset.ts`), the date pickers refuse the future, the vertical
+filter will not go below one selection, and every vendor has every series. What
+stops a single day crossing 100 is that keys which are subsets of one another
+share a noise draw, so their daily ratio moves only along the vendor's arc:
+capacity, worked hours and tasks are three families in `dayRaw`. `test:engine`
+walks every day of eleven years checking that no subset escapes its set, and
+`test:ui` sweeps every period on every lens.
+
+**4. Never put a CSS class on an SVG element without checking the stylesheet.**
 In SVG 2 the CSS geometry properties (`height`, `width`, `x`, `y`) apply to
 shapes and **override the presentation attribute**. A `.bar` rule written for the
 progress bars silently collapsed every column chart to 7px, and an automated
@@ -51,13 +66,17 @@ npm run standalone     one self-contained HTML in dist-standalone/
 
 ```
 config/           everything a product person edits, no code
-  vendors.json      vendors, headcount, rates, calibration totals, site mix, roles
+  vendors.json      vendors, headcount, rate card, calibration totals, the
+                    locations with their own rates, designations, skills,
+                    projects, contract term and burn, penalty exposure, SLA
+                    breaches, tier, and each vendor's personality
   verticals.json    the vertical list
   lenses.json       the dashboard pages: hero tiles and metric sections per page
   roles.json        role-based views: landing page, visible pages, hidden metrics
   copy.json         every label and tooltip, keyed by metric id
   thresholds.json   badge cut-offs, score weights, risk rules, the seat model
-  theme.json        colours, fonts, radius, sheet width
+  theme.json        colours, fonts, radius, sheet width (1100: an iPad Air in
+                    landscape renders it at 100% with no zoom)
 
 src/engine/       the dataset and the maths
   dataset.ts        daily series generation and calibration
@@ -113,9 +132,27 @@ If your metric needs a visual shape that does not exist yet, add an interface to
 `src/components/MetricSection.tsx`. Reusing an existing shape needs no component
 change at all.
 
+### Add a full-width band below the vendor grid
+A metric that only means something across vendors cannot live in a vendor
+column. Give it a `portfolio` function in the registry returning a view
+`MetricSection.tsx` and `PortfolioBand.tsx` can draw, then list its id in a
+lens's `portfolioSections` array. Consolidation Levers is the worked example. A
+band reads the page filter bar; it does not get a time control of its own.
+
+### Slice by designation, skill, project or location
+Those four are one thing in the code: a `Dimension`. `dimensionRows(vendor, dim)`
+returns `{ name, count, factor }` for any of them, `sliceEfficiency` applies the
+factor and `sliceShare` gives the slice's share of the roster. That is why
+Consolidation Levers compares on four dimensions from one Compare by control
+rather than four hand-written charts, and why the designation strip on a vendor
+card can rescale a whole column: `buildContext` takes `{ dimension, designation }`
+and scales the window's totals by that share. To add a fifth dimension, add it to
+`DIMENSIONS` in `src/engine/types.ts` and give `dimensionRows` a case. Nothing in
+the components changes.
+
 ### Add a lens (a new dashboard page)
 Append a block to `lenses` in `config/lenses.json`: an `id`, a `navGroup` from
-`navGroups`, a `navLabel`, `title`, `subtitle`, `defaultPeriod`, four `hero`
+`navGroups`, a `navLabel`, `title`, `subtitle`, `defaultPeriod`, the `hero`
 metric ids and the `sections` metric ids. Add it to the `lenses` array of any
 role that should see it. No new file is needed; `LensPage` renders it.
 
@@ -139,7 +176,25 @@ so nothing is off limits. Three things there are load-bearing:
   Every bar height and area path scales with it. `test:charts` pins it.
 - `ColumnChart` defaults to `layout="overlay"`, which is how the product draws a
   pair of series: both centred on the category, wide behind and narrow in front,
-  never side by side. `layout="grouped"` exists if a future chart wants it.
+  never side by side. `layout="grouped"` puts them beside each other, for a chart
+  comparing named things rather than two measures of one thing. Both honour
+  `maxPointWidth`; without the cap a four-category grouped chart on a full-width
+  band draws 90px slabs.
+- **Charts measure their own container** (`useMeasure`). The `width` prop is a
+  first-paint fallback only. Passing a width computed from `sheetMinWidth` meant
+  the viewBox was narrower than the box it drew into on any wide screen, so the
+  browser magnified the whole drawing and an 11px label came out at 16.
+- `labelFit` in `Grid.tsx` decides flat, cut to the slot, tilted, or tilted and
+  thinned, from the real width. The product prints twelve week labels flat
+  because its chart is 761px wide; a vendor column is not. **A label is tilted
+  only when the tilt fits inside the axis margin.** A tilted label reaches down
+  the page by its own length times sin(38 degrees), so a 27-character project
+  name reaches 95px against a 40px margin and leaves the card with it. Anything
+  that long stays flat and is cut to its slot, full text on hover. `.chart` is
+  clipped on both axes as the backstop.
+- `bucketsFor` drops an unfinished trailing bucket. Two days of a week beside
+  full weeks makes every money line fall to the axis at the right edge, which
+  reads as a collapse rather than as a period still running.
 - Column corners are top-only rounded, drawn as a path. A rect with `rx` rounds
   the base too, which reads wrong against the axis.
 
@@ -167,24 +222,265 @@ the page.
 
 See `docs/AUDIT-2026-09-23.md` for the full table with reasons.
 
+- There is one risk verdict, and it is the Vendor Score's own band. The old rule
+  needed utilization over 85 AND SLA under 90 for High, and SLA under 90 for
+  Medium. In a portfolio running at 60% utilization no vendor can reach the
+  first and all of them are under the second, so every vendor read Medium and
+  At-Risk Vendors read 0 beside a vendor scoring 37. The metric roadmap flags
+  that rule as broken ("one fires on both Util > 85% and Util <= 85%") and asks
+  for one verdict rather than three, which is what `riskStatus` is now.
+- The Risk Status card is off the vendor page. It printed that band a second
+  time, in 54px, at the top of every column. The reading lives on the At-Risk
+  Vendors tile, which carries the list behind a View button the way Upcoming
+  Contract Renewals and Projects at Risk do. `riskStatus` stays in the registry
+  and can go back on any lens with one line of config.
+- The designation strip is per lens, `designationStrip` in `config/lenses.json`.
+  It is off on Vendor Performance, where it moved three ratios and decided
+  nothing, and on wherever it rescales a column of money.
+- A project's status is derived, never configured. Each project has a `share` of
+  its vendor's task volume and a `factor` that tilts its on-time rate; its
+  assigned, on-time and late counts and its at-risk flag all follow. Two config
+  strings used to carry the status and the reason, so a project could be flagged
+  against numbers that said otherwise, in units the model does not have.
 - Metric chips commit on click rather than behind Apply, at the product owner's
   request. The multiselects do use Apply, as the product does.
 - The descriptive paragraph under each metric title is removed, per the Sep 2026
   metric tooltip spec. The live build still shows it.
 - The KPI hero strip recomputes with every filter. The shipped build shows the
   same four frozen values on every period and on two different pages.
-- Capacity Utilization reproduces the percentage the product prints, and expected
-  hours are set to the value that produces it. The shipped build prints a pair of
-  hour totals that do not divide to the percentage beside them.
-- Idle Capacity is the leakage ratio, because that is what the shipped build
-  shows on the vendor detail page.
-- Headcount by Role totals the mapped role rows (69 for PH Engineering); Total
-  Headcount in Vendor Profiles is the licensed count (75). They are different
-  numbers in the product too.
-- "Cost Loss" and "Idle Time Cost" are the current names. Metric ids are still
-  `costAtRisk` and `idleCost`, so renames stay a `config/copy.json` edit.
-- Over and Under Utilized Employee are shares of seats, not of hours, modelled
-  per seat in `src/engine/formulas.ts` and tuned in `config/thresholds.json`.
+- Capacity Utilization no longer reproduces the live build's Yearly 2026
+  figures. Those ran above 100% and their hour totals did not divide to the
+  percentages printed beside them. The calibration here is set so utilization
+  lands at 68 / 58 / 42, 60% portfolio-wide, and every identity closes. The
+  whole model is ten times the size it was in 1.3: 950 contracted FTE, not 95,
+  because a governance conversation about $40M does not happen over a $4M
+  portfolio.
+- Idle Capacity is 100 minus Capacity Utilization, the PEM Metrics workbook
+  definition. Leakage is non-productive hours over *contracted* hours, not over
+  logged hours, at the product owner's instruction: the reference point is what
+  you paid for.
+- Overtime bills at the contracted rate. There is no premium, confirmed with the
+  product owner.
+- FTE equivalent divides hours not delivered by 7.5 hours per working day, so it
+  reads the same whether you look at a week or a year.
+- Delta chips carry a `tone` separate from their arrow direction. A rising cost
+  points up and reads red. Set `goodDown` on `delta()` and `moneyDelta()` for
+  any metric where less is better.
+- Threshold pills go on exactly two metrics, Vendor Score and Leakage Summary,
+  which is what the live build badges. Audited 23 Sep 2026 and pinned by a test.
+  Overtime Integrity states its number and leaves the reading to the viewer.
+- The drilldown chevron is on Cost Loss, as in the live build, and on Hours not
+  delivered and FTE equivalent, because the Cost Loss slide-out is where those
+  two numbers live. `drill: 'costLoss'` in the registry is the hook.
+- Headcount reads by designation, not by role: Associate, Senior Associate,
+  Lead, Manager, each with a cost factor. The designation strip on a vendor card
+  rescales that column by the designation's share of the roster; the aside rows
+  sum to the vendor's headcount.
+- Leakage Value sits above Cost Loss across the portfolio, $40.34M against
+  $34.24M. Leakage counts every non-productive hour inside logged time; cost
+  loss counts only the hours never delivered against contracted capacity. A
+  build where portfolio leakage came in under cost loss was telling the reader
+  that waste is smaller than absence. `test:engine` pins the ordering. One
+  vendor can invert it and Ploceus does: at 42% capacity utilization most of its
+  loss is hours that never arrived, not hours wasted once logged.
+- On-Time Delivery, not Delivery Predictability. Nothing is predicted: it is
+  tasks delivered on time against tasks assigned. "Predictability" is a lens
+  name in PEM Metrics.xlsx and the Persona Lens Spec, and the metrics under it
+  are variability measures. On-Time Delivery is the name that sheet already uses
+  for this number. It is also Output Rate times SLA Compliance, which is a
+  hierarchy rather than a redundancy: the headline first, its two parts under
+  it. That relationship is not written on screen, at the product owner's
+  instruction.
+- The contract exhaustion date is derived from the burn and the term, never
+  configured. A configured date let PH Engineering read 91% spent against 93% of
+  its term elapsed while claiming the money ran out a month early.
+- "Cost Loss", "Idle Time Cost", "Actual Cost Incurred" and "Headcount by
+  Designation" are the current names. The metric ids behind them are still
+  `costAtRisk`, `idleCost`, `billableCost` and `headcountByRole`, so a rename
+  stays a `config/copy.json` edit and no test or lens config has to move.
+- Over and Under Utilized Employee are shares of seats, not of hours. A seat's
+  utilization is a lognormal draw around its vendor's mean, scattered by
+  `personality.utilizationSpread`. It was uniform until 1.5, which put 79% of a
+  roster outside the healthy band and capped a seat at 2.15 times the mean, so
+  the vendor with the lowest utilization could not produce a single overworked
+  person. A test now asserts every vendor can.
+- Most people being under-utilized is the finding, not a bug. A portfolio
+  running at 56% effective utilization against a 70% floor has three quarters of
+  its roster below that floor by arithmetic. That is the pitch: you are paying
+  for 950 people and getting 570.
+- Utilization at High-rate Locations reads only the sites billing above
+  `highRateUsdPerHour` in `config/vendors.json`. Weighted across every site it
+  is effective utilization with a different name, which is what it was until
+  1.5: the card printed 60.01% beside a 60.00% on the same page.
+- Unused Capacity and Idle Time Cost are different things and the tooltips say
+  so. Unused Capacity is contracted capacity that never became work, 100 minus
+  capacity utilization. Idle Time Cost is idle inside the hours that were
+  logged, about 14% of logged against a 32% Unused Capacity for PH Engineering.
+
+## Units, and the persona that reads them
+
+Every number on screen names what it counts, in the unit the persona acts in.
+
+- **Delivery counts tasks.** Tasks assigned, tasks completed, tasks delivered on
+  time, tasks late. A project's risk line reads "5,865 of 16,368 tasks late or
+  undelivered", not "12 points under contract", which named a unit the model
+  does not have and that no one can act on.
+- **Finance counts money and hours**, at the rate card, abbreviated the same way
+  everywhere: `$132.48M`, `491.84K hrs`.
+- **Capacity counts people**, whole, never a third of one.
+- **A score has no unit.** Vendor Score is a weighted index, so its delta is a
+  plain signed number. It used to say "pts".
+- **A percentage is a percentage.** Nothing on screen is expressed in "points".
+
+Anything derived is derived from the same counts, so a status and the numbers
+beside it cannot disagree. A project is at risk because its own on-time
+percentage is under `projectOnTimeFloor`, not because a string in the config
+says so.
+
+## Every vendor has a shape
+
+A prototype where every percentage sits on its annual value reads as a mockup.
+Until 1.5 that is what this was: one volume draw per day and a 4% wander per
+key, which pins every ratio by construction. Capacity Utilization moved 1.39
+points across eight months, the overtime rate moved 0.12, and every trend chart
+drew a flat line.
+
+`personality` in `config/vendors.json` fixes it. `shape` is the arc a vendor
+travels across the year, `improving`, `sagging` or `sliding`, and `swing` is how
+far each key travels peak to trough, signed so a positive number moves with the
+vendor's fortunes. Ratios move because the keys in a ratio have different
+swings: productive swings 0.20 against expected's 0.02, so capacity utilization
+climbs. `wobble` adds a weekly jitter so a trend line reads as measured rather
+than drawn with a ruler.
+
+Two things make it safe. **Calibration is untouched**: each key is still scaled
+to its configured year total, so every pinned figure reads the same whatever
+path it took. And **keys that are subsets of one another share a noise draw**,
+so their daily ratio carries no noise and moves only along the arc, which is the
+only reason a vendor already at a 94.7% output rate can swing at all without
+posting a day over 100. Both are asserted in `tests/engine.test.ts`.
+
+Adding a swing is not free: a ratio has only as much headroom as `100 - its
+annual value`, and the arc uses half the swing differential either side. If the
+daily walk goes red, that is what it is telling you.
+
+## Three colour families, and what each one means
+
+Blue is anything measured. Every trend series on every page is blue, two tints:
+`chart.productive` for the value and `chart.logged` for the series behind it.
+
+Amber is loss, and only the marks that ARE the loss: the segments inside a
+stacked bar, the gap in Partner Efficiency, the high-rate locations, a contract
+burning past its term. Three tones, `lossStrong` / `lossMid` / `lossLight`, so a
+breakdown of one quantity reads as one family. A trend chart of a loss ratio is
+still blue, because a rate over time is a measurement.
+
+Grey is the remainder: the part of a bar that is not the story.
+
+The three `vendorSeries` hues exist for exactly one job, charts where vendors
+compete side by side, which today is Consolidation Levers and Vendor Dependency.
+Because they are used nowhere else, a teal anywhere on a page means PH
+Operations. Do not borrow them for a stacked bar.
+
+Status colours are unchanged and separate: green, amber and red on the two
+badged metrics, the Risk Status level, the delta chips and the hero sparklines.
+A money headline is green only where it is money you got something for; Cost
+Loss prints in ink, because green on a loss reads as good news.
+
+The build carried eight unrelated data hues before 1.6, with teal meaning
+"non-core activities" on one card and "PH Operations" on the next.
+
+## Say it once
+
+Every sentence on a card has to earn its place against the chart beside it.
+Cut in 1.6: "budget runs out early" and its two sub-lines under Contract Burn,
+the Vendor Dependency sentence naming the consequence and the one proposing a
+remedy, both Consolidation Levers insight lines, and the hours sentence under
+Capacity Utilization.
+
+Three tests for a line of copy:
+
+- **Does the picture already say it?** The burn bar with a term mark says the
+  budget runs out early. The sentence did not survive.
+- **Is it a recommendation?** "Spreading comparable work across the other 2
+  would cut that exposure" is a decision, and the product owner's rule is that
+  the prototype does not make them.
+- **Does it appear elsewhere on the same page?** The two hour figures under
+  Capacity Utilization are in Partner Efficiency directly above it.
+
+Tooltips follow `docs/` and the Sep 2026 tooltip spec: ratios read
+`<what was delivered> against <what it was measured against>`, money reads
+`<what>, valued at your rate card`, counts name what is counted. No formula, no
+threshold value, no "not the same as", no tap instruction, no second sentence.
+
+## The design system is fixed
+
+There is a product in production. The prototype may not look different from it,
+so no new component, no new spacing scale, no new type ramp, no colour that is
+not already in `config/theme.json`. Content from a mockup is fair game; its
+layout is not. Anything that does need a layout decision gets asked, not
+invented. This is the product owner's ground rule and it outranks any mockup,
+including the Figma files: those are old prototypes built without the design
+system, and only their metric structure is a reference.
+
+## Hero tiles sit on one baseline
+
+Every number in a hero strip has to start at the same y, and a number sits
+directly below its label, so every label box has to be as tall as the tallest
+label in that strip. A fixed two-line reserve did that until a label wrapped to
+three lines on an iPad and dropped its number 18px below the rest.
+
+CSS cannot size one tile's box from another tile's content. Subgrid would, but a
+tile carries `container-type: inline-size` for its own narrow-width reflow, and a
+size container can never be a subgrid: the used value falls back to `none`, which
+was verified in Chromium rather than assumed. So `useLabelReserve` measures
+instead. It reads the tallest `.kl` span in the strip and writes
+`--kpi-label-h`, which is the label's `min-height`. The span is what gets
+measured, not the box: the span is `display:block` and wraps to its natural
+height whatever reserve sits on the box around it, which keeps the read out of
+the loop the ResizeObserver is watching. `VendorDetail` does the same with
+`--dkpi-title-h`.
+
+The other half is the number's own box. `.kpi-val` has the sparkline's height,
+44px, so a tile with a sparkline beside its number lines up with a tile without
+one. A Playwright test asserts one baseline per strip on all four lenses at iPad
+width, and two baselines on the vendor page, which is two rows of four.
+
+## A list of numbers is not a visualisation
+
+Partner Efficiency and Leakage Breakdown were 575px and 572px, the two tallest
+cards on a page already four screens long, and both were a column of label-value
+rows. They are one stacked bar each now, `StackBar` in `MetricSection.tsx`,
+which is the progress-bar idiom the location rows already use, split into named
+parts with the numbers in a legend beside it. SLA Risk Summary was six stacked
+project blocks at 437px; it is three rows, one per vendor, worst first, with
+each project a chip and its reason one tap away.
+
+The rule these follow: a card should answer its question in one look, and carry
+the numbers for anyone who wants to check. If a card is a list, ask what shape
+the list is describing and draw that instead.
+
+## Touch
+
+The prototype is demoed on an iPad Air in landscape, so touch is a first-class
+input, not a fallback.
+
+A tap on iOS fires a whole sequence: `pointerdown`, `touchstart`, `mouseover`,
+`mousedown`, `mouseup`, `click`. A control wired naively to both hover and click
+opens on the synthesised `mouseover` and closes again on the `click`, so it never
+appears. `preventDefault` is not a reliable cure; whether the click still arrives
+varies by browser and by automation driver. So `useTapToggle` in
+`src/components/usePointer.ts` deduplicates instead: the first touch toggles and
+every mouse event for the next 700ms is ignored as an echo. Anything that opens
+on click uses it.
+
+Charts use pointer events, so one code path serves a mouse, a trackpad and a
+finger. A touch tooltip latches rather than vanishing when the finger lifts,
+because on a tablet the finger is what was covering the number you came to read;
+the next tap elsewhere clears it.
+
+Every tap target clears 32px. The info icon keeps its 14px glyph and gets its
+size from an invisible `::after` pad, so nothing on the page moves.
 
 ## Style
 

@@ -54,10 +54,11 @@ export function FilterBar({ lensId, sections }: { lensId: string; sections: stri
   })()
 
   /** commit handlers, shared by the popover buttons and the page-level pair */
-  /** clearing every vertical is a real state: it empties the page, the way
-   *  scoping works in the product. Clearing every vendor is not, so that one
-   *  falls back to all. */
-  const commitVert = (next: string[]) => {
+  /** the vertical list has a floor of one, so the page can never end up with
+   *  no vendors in scope. Clearing every vendor is not a real state either, so
+   *  that one falls back to all. */
+  const commitVert = (raw: string[]) => {
+    const next = raw.length ? raw : st.verticals
     const allowed = VENDORS.filter(v => next.includes(v.vertical)).map(v => v.name)
     patch({ verticals: next, vendors: allowed, applied: { ...st.applied, vendors: allowed } })
     setPop(null)
@@ -108,7 +109,7 @@ export function FilterBar({ lensId, sections }: { lensId: string; sections: stri
           staged={s.staged.vert ?? st.verticals}
           onStage={next => stage('vert', next)}
           onCommit={commitVert}
-          showSelectAll emptyMeansAll={false}
+          showSelectAll emptyMeansAll={false} minSelected={1}
           open={s.openPop === 'vert'}
           onToggle={id => setPop(id, st.verticals)}
         />

@@ -9,6 +9,20 @@ export const pct = (n: number | null | undefined): string =>
 export const signed = (n: number, unit = '%'): string =>
   `${n >= 0 ? '+' : '-'}${trimN(Math.abs(n))}${unit}`
 
+/** A signed change in hours, abbreviated the way hours read everywhere else.
+ *  Without this a delta prints "-204746.33 hrs" beside a value of "550K hrs". */
+export const signedHrs = (n: number): string =>
+  `${n >= 0 ? '+' : '-'}${hrs(Math.abs(n))}`
+
+/** A signed change in people. Whole, like the counts it sits under. */
+export const signedFte = (n: number): string =>
+  `${n >= 0 ? '+' : '-'}${Math.round(Math.abs(n)).toLocaleString()} FTE`
+
+/** A count of people. Whole numbers: 96 sits beside "Resources 300", and a
+ *  third of a person is not a thing anyone acts on. */
+export const fte = (n: number | null | undefined): string =>
+  n == null || !Number.isFinite(n) ? '0' : Math.round(n).toLocaleString()
+
 /** Hours read as "832.71 hrs" below 1000 and "106.61K hrs" above. */
 export function hrs(n: number): string {
   if (!Number.isFinite(n)) return '0 hrs'

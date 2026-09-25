@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+  // relative, so the build runs from any path: a GitHub Pages project site
+  // serves at /<repo>/, and an absolute base would 404 every asset there
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
