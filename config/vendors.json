@@ -1,0 +1,109 @@
+{
+  "$comment": "Each vendor produces one deterministic daily series. 'calibration' is the 2026 year-to-date total each key must sum to, so the Yearly 2026 view reproduces the numbers you want on screen. Change a calibration number and every window that contains those days moves with it. Add a vendor by copying a block and giving it a new 'seed'.",
+  "today": "2026-09-15",
+  "calibrationYear": 2026,
+  "vendors": [
+    {
+      "id": "ph-engineering",
+      "name": "PH Engineering",
+      "vertical": "healthcare",
+      "logo": "jamocha",
+      "seed": 1103,
+      "headcount": 75,
+      "dataFrom": "2016-01-01",
+      "dataTo": "2026-09-15",
+      "billRate": 64.85,
+      "idleRate": 306.8,
+      "growth": 0.028,
+      "calibration": {
+        "expected": 71815,
+        "productive": 81740,
+        "logged": 106610,
+        "target": 6704,
+        "completed": 6742,
+        "onTime": 3007,
+        "idle": 832.71,
+        "leak": 5501.1
+      },
+      "sites": [
+        { "name": "Bengaluru", "factor": 0.9965, "weight": 0.6265 },
+        { "name": "Chennai",   "factor": 0.9787, "weight": 0.2735 },
+        { "name": "Hyderabad", "factor": 1.0815, "weight": 0.1 }
+      ],
+      "roles": [
+        { "title": "Team Member", "count": 43, "pct": 62.32 },
+        { "title": "Sr. Manager", "count": 13, "pct": 18.84 },
+        { "title": "Team Manager", "count": 13, "pct": 18.84 }
+      ]
+    },
+    {
+      "id": "ph-operations",
+      "name": "PH Operations",
+      "vertical": "healthcare",
+      "logo": "prohance",
+      "seed": 2207,
+      "headcount": 148,
+      "dataFrom": "2016-01-01",
+      "dataTo": "2026-09-13",
+      "billRate": 382.6,
+      "idleRate": 1502.66,
+      "growth": 0.035,
+      "calibration": {
+        "expected": 141660,
+        "productive": 150330,
+        "logged": 192470,
+        "target": 301,
+        "completed": 71,
+        "onTime": 27,
+        "idle": 5630,
+        "leak": 24385.9
+      },
+      "sites": [
+        { "name": "Bengaluru", "factor": 1.0076, "weight": 0.502 },
+        { "name": "Chennai",   "factor": 0.964,  "weight": 0.1 },
+        { "name": "Hyderabad", "factor": 1.0206, "weight": 0.398 }
+      ],
+      "roles": [
+        { "title": "Team Member", "count": 70, "pct": 47.3 },
+        { "title": "Team Manager Ops", "count": 22, "pct": 14.86 },
+        { "title": "Team Lead Implementation", "count": 20, "pct": 13.51 },
+        { "title": "AM Managers", "count": 11, "pct": 7.43 },
+        { "title": "Leadership", "count": 10, "pct": 6.76 },
+        { "title": "Team Manager", "count": 7, "pct": 4.73 },
+        { "title": "Team Manager sales", "count": 5, "pct": 3.38 },
+        { "title": "AIPEX Manager", "count": 1, "pct": 0.68 },
+        { "title": "AM Leadership Direct Report Access", "count": 1, "pct": 0.68 },
+        { "title": "Leadership - Implementation", "count": 1, "pct": 0.68 }
+      ]
+    },
+    {
+      "id": "ploceus",
+      "name": "Ploceus",
+      "vertical": "healthcare",
+      "logo": "ploceus",
+      "seed": 3301,
+      "headcount": 16,
+      "dataFrom": "2016-01-01",
+      "dataTo": "2026-08-16",
+      "billRate": 96.4145,
+      "idleRate": 288.95,
+      "growth": -0.02,
+      "calibration": {
+        "expected": 11167,
+        "productive": 6490,
+        "logged": 15580,
+        "target": 0,
+        "completed": 0,
+        "onTime": 0,
+        "idle": 1540,
+        "leak": 6758.6
+      },
+      "sites": [
+        { "name": "Bengaluru", "factor": 0.99904, "weight": 1 }
+      ],
+      "roles": [
+        { "title": "Team Member", "count": 16, "pct": 100 }
+      ]
+    }
+  ]
+}

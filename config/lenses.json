@@ -1,0 +1,47 @@
+{
+  "$comment": "A lens is a dashboard page. Add one by appending a block: give it an id (becomes the URL hash), a nav group, a default period, four hero tiles and the metric sections that render on each vendor card. Every metric id must exist in src/metrics/registry.tsx.",
+  "navGroups": [
+    { "id": "vendor-management",   "label": "Vendor Management",   "icon": "bars" },
+    { "id": "delivery-management", "label": "Delivery Management", "icon": "pie" },
+    { "id": "finance-management",  "label": "Finance Management",  "icon": "db" }
+  ],
+  "lenses": [
+    {
+      "id": "vendorPerformance",
+      "navGroup": "vendor-management",
+      "navLabel": "Vendor Performance",
+      "title": "Vendor Performance",
+      "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
+      "defaultPeriod": "Yearly",
+      "hero": ["capacityUtilization", "costAtRisk", "atRiskVendors", "slaCompliance"],
+      "sections": ["vendorScore", "capacityUtilization", "outputRate", "slaCompliance", "headcountByRole", "riskStatus"]
+    },
+    {
+      "id": "capacityUtilizationHealth",
+      "navGroup": "delivery-management",
+      "navLabel": "Capacity & Utilization",
+      "title": "Capacity & Utilization",
+      "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
+      "defaultPeriod": "Weekly",
+      "hero": ["effectiveUtilization", "idleCapacity", "overUtilizedEmployee", "underUtilizedEmployee"],
+      "sections": ["effectiveUtilization", "idleCost", "highRateUtilization", "productiveVsNonProductive"]
+    },
+    {
+      "id": "costEfficiency",
+      "navGroup": "finance-management",
+      "navLabel": "Cost Efficiency",
+      "title": "Cost Efficiency",
+      "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
+      "defaultPeriod": "Weekly",
+      "hero": ["billablePortfolioCost", "capacityUtilization", "costAtRisk", "slaCompliance"],
+      "sections": ["billablePortfolioCost", "capacityUtilization", "leakageSummary", "slaCompliance"]
+    }
+  ],
+  "detail": {
+    "title": "Vendor detail",
+    "subtitle": "Shows the overall vendor performance across different metrics.",
+    "defaultPeriod": "Yearly",
+    "kpis": ["totalHeadcount", "capacityUtilization", "slaCompliance", "costAtRisk", "effectiveUtilization", "idleCapacity", "overUtilizedEmployee", "underUtilizedEmployee"],
+    "panels": ["billableCostTrend", "idleCost", "slaCompliance", "effectiveUtilization"]
+  }
+}

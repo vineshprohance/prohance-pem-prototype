@@ -1,0 +1,55 @@
+ProHance PEM prototype
+======================
+
+You need Node.js 18 or newer. Check with:   node -v
+If you do not have it, get the LTS installer from https://nodejs.org
+
+FIRST RUN
+---------
+Open a terminal in this folder (in File Explorer: type "cmd" in the address bar
+and press Enter), then:
+
+    npm install
+    npm run dev
+
+A browser opens on http://localhost:5173. Leave the terminal running; every
+edit you save appears in the browser immediately. Press Ctrl+C to stop.
+
+WHAT TO EDIT
+------------
+Everything a product person changes is in the config folder:
+
+    config/vendors.json      the data: headcount, rates, the totals per vendor
+    config/lenses.json       the pages and which metrics appear on each
+    config/roles.json        personas: where each lands, what each sees
+    config/copy.json         every label and tooltip
+    config/thresholds.json   badge cut-offs, score weights, risk rules
+    config/theme.json        colours and fonts
+
+README.md explains each of these with examples.
+
+CHECK YOU DID NOT BREAK ANYTHING
+--------------------------------
+    npm run test:engine
+
+Takes a second. It compares every headline figure against what the real
+ProHance build prints, and names any that moved.
+
+MAKE A SHAREABLE FILE
+---------------------
+    npm run standalone
+
+Writes dist-standalone/ProHance-PEM.html, a single file you can double-click,
+email, or hand to anyone.
+
+USING CLAUDE CODE ON THIS
+-------------------------
+Install it once:   npm install -g @anthropic-ai/claude-code
+Then in this folder:   claude
+
+CLAUDE.md tells it the conventions, so you can just ask in plain English:
+
+    "Add a Rework Rate metric to the Cost Efficiency page"
+    "Add a vendor called Northwind with 40 people"
+    "Add a COO persona that only sees Vendor Performance and Cost Efficiency"
+    "Make the charts animate when I change the period"

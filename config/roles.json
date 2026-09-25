@@ -1,0 +1,15 @@
+{
+  "$comment": "Role-based views. 'lenses' limits which pages the role can see, 'defaultLens' is where the role lands, and 'hideMetrics' removes metric sections for that role without touching the lens definition. Set showSwitcher false to ship a single-role build.",
+  "showSwitcher": true,
+  "defaultRole": "all",
+  "roles": [
+    { "id": "all", "label": "All views", "defaultLens": "vendorPerformance",
+      "lenses": ["vendorPerformance", "capacityUtilizationHealth", "costEfficiency"], "hideMetrics": [] },
+    { "id": "vendor-manager", "label": "Vendor Manager", "defaultLens": "vendorPerformance",
+      "lenses": ["vendorPerformance"], "hideMetrics": [] },
+    { "id": "delivery-manager", "label": "Delivery Manager", "defaultLens": "capacityUtilizationHealth",
+      "lenses": ["capacityUtilizationHealth", "vendorPerformance"], "hideMetrics": ["headcountByRole"] },
+    { "id": "finance-manager", "label": "Finance Manager", "defaultLens": "costEfficiency",
+      "lenses": ["costEfficiency", "vendorPerformance"], "hideMetrics": ["headcountByRole", "riskStatus"] }
+  ]
+}

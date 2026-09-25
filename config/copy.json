@@ -1,0 +1,120 @@
+{
+  "$comment": "All user-facing labels and tooltips, keyed by metric id. 'label' is the heading on screen. Tooltips are keyed by where the metric appears: hero strip, vendor card, Vendor Profiles footer, vendor detail page. A missing key falls back to 'card'. Rename a metric here and it changes everywhere.",
+  "metrics": {
+    "vendorScore": {
+      "label": "Vendor Score",
+      "tooltip": { "card": "One health score, weighted from utilization and delivery." }
+    },
+    "capacityUtilization": {
+      "label": "Capacity Utilization",
+      "tooltip": {
+        "hero": "Productive work delivered against capacity contracted, all vendors in view.",
+        "card": "Productive work delivered against the capacity contracted for this vendor.",
+        "profile": "Productive work delivered against capacity contracted.",
+        "detail": "Productive work delivered against the capacity contracted for this vendor."
+      }
+    },
+    "outputRate": {
+      "label": "Output Rate",
+      "tooltip": { "card": "Work completed against work assigned, this period." }
+    },
+    "slaCompliance": {
+      "label": "SLA Compliance",
+      "tooltip": {
+        "hero": "Deliveries that met their agreed timeline, all vendors in view.",
+        "card": "Deliveries that met their agreed timeline."
+      }
+    },
+    "headcountByRole": {
+      "label": "Headcount by Role",
+      "tooltip": { "card": "Configured headcount, broken down by mapped role." }
+    },
+    "riskStatus": {
+      "label": "Risk Status",
+      "tooltip": { "card": "Risk level, set by SLA, utilization and output thresholds." }
+    },
+    "effectiveUtilization": {
+      "label": "Effective Utilization",
+      "tooltip": {
+        "hero": "Productive work against the hours actually logged, all vendors in view.",
+        "card": "Productive work against the hours this vendor actually logged.",
+        "profile": "Productive work against the hours actually logged."
+      }
+    },
+    "idleCost": {
+      "label": "Idle Time Cost",
+      "tooltip": { "card": "Idle time inside logged hours, valued at your rate card." }
+    },
+    "highRateUtilization": {
+      "label": "Utilization of High-rate Resources",
+      "tooltip": { "card": "Productive work against capacity contracted, highest-rate roles only." }
+    },
+    "productiveVsNonProductive": {
+      "label": "Productive vs Non-Productive Utilization",
+      "tooltip": { "card": "Logged hours divided into productive and other work." }
+    },
+    "billablePortfolioCost": {
+      "label": "Billable Portfolio Cost",
+      "tooltip": { "card": "Productive work delivered, valued at your rate card." }
+    },
+    "leakageSummary": {
+      "label": "Leakage Summary",
+      "tooltip": { "card": "Contracted capacity this vendor did not turn into productive work." }
+    },
+    "costAtRisk": {
+      "label": "Cost Loss",
+      "tooltip": { "card": "Contracted capacity not delivered, valued at your rate card." }
+    },
+    "atRiskVendors": {
+      "label": "At-Risk Vendors",
+      "tooltip": { "card": "Vendors that crossed a risk threshold on SLA, utilization or output." }
+    },
+    "idleCapacity": {
+      "label": "Idle Capacity",
+      "tooltip": {
+        "hero": "Contracted capacity left unused, all vendors in view.",
+        "card": "Contracted capacity left unused."
+      }
+    },
+    "overUtilizedEmployee": {
+      "label": "Over Utilized Employee",
+      "tooltip": { "card": "People working above their expected capacity." }
+    },
+    "underUtilizedEmployee": {
+      "label": "Under Utilized Employee",
+      "tooltip": { "card": "People working below their expected capacity." }
+    },
+    "totalHeadcount": {
+      "label": "Total Headcount",
+      "tooltip": { "card": "Headcount configured for this vendor." }
+    },
+    "billableCostTrend": {
+      "label": "Billable Cost Trend",
+      "tooltip": { "card": "Productive work delivered, valued at your rate card." }
+    },
+    "vendorScoreTrend": {
+      "label": "Vendor Score Trend",
+      "tooltip": { "card": "One health score, weighted from utilization and delivery." }
+    },
+    "gap": {
+      "label": "Gap",
+      "tooltip": { "card": "Logged hours that were not productive work." }
+    }
+  },
+  "ui": {
+    "noData": "No data available",
+    "allVendors": "All Vendor",
+    "selectVendor": "Select Vendor",
+    "noVertical": "None selected",
+    "allLocations": "All Locations",
+    "selectLocation": "Select Location",
+    "vendorProfiles": "Vendor Profiles",
+    "periods": ["Yearly", "Quaterly", "Monthly", "Weekly"],
+    "periodSuffix": {
+      "Yearly": "vs last year",
+      "Quaterly": "vs last quarter",
+      "Monthly": "vs last month",
+      "Weekly": "vs last week"
+    }
+  }
+}

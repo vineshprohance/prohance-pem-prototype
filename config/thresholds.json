@@ -1,0 +1,13 @@
+{
+  "$comment": "Every number that decides a badge colour or a risk flag. Edit here rather than in code.",
+  "vendorScore": { "capacityWeight": 0.6, "slaWeight": 0.4, "healthy": 80, "watch": 50 },
+  "leakage": { "healthy": 20, "watch": 40 },
+  "risk": { "capacityOver": 85, "slaUnder": 90 },
+  "employeeUtilization": {
+    "$comment": "Per-seat utilization is drawn deterministically across this band, as a multiple of the vendor's effective utilization for the window. overAt / underAt are the thresholds in percent.",
+    "spreadLow": 0.055,
+    "spreadHigh": 1.62,
+    "overAt": 100,
+    "underAt": 70
+  }
+}
