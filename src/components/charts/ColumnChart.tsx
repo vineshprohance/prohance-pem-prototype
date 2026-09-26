@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COLUMN, OVERLAY_POINT_PADDING, columnWidth, fmtVal, GEO, niceMax } from './primitives.ts'
+import { COLUMN, OVERLAY_POINT_PADDING, columnWidth, fmtVal, GEO, groupedColumn, niceMax } from './primitives.ts'
 import type { TickKind, ValueUnit } from './primitives.ts'
 import { Grid, XLabels, labelFit } from './Grid.tsx'
 import { ChartTooltip } from './ChartTooltip.tsx'
@@ -53,18 +53,30 @@ export function ColumnChart({
 
   /** widths and left offsets per series, for the chosen layout */
   const geom = series.map((_, j) => {
-    if (layout === 'overlay') {
-      const pp = OVERLAY_POINT_PADDING[Math.min(j, OVERLAY_POINT_PADDING.length - 1)]
-      const w = columnWidth(slot, pp)
-      return { w, dx: -w / 2 }
-    }
-    // grouped: equal shares of the group, capped, then the set is centred
-    const group = slot * (1 - 2 * COLUMN.groupPadding)
-    const share = group / series.length
-    const w = Math.max(2, Math.min(share * 0.84, COLUMN.maxPointWidth))
-    const gap = Math.min(share * 0.16, 6)
-    const total = w * series.length + gap * (series.length - 1)
-    return { w, dx: -total / 2 + j * (w + gap) }
+    const pp = OVERLAY_POINT_PADDING[Math.min(j, OVERLAY_POINT_PADDING.length - 1)]
+    const w = columnWidth(slot, pp)
+    return { w, dx: -w / 2 }
+  })
+
+  /** Which series actually have a value in a category. */
+  const liveIn = (i: number) => {
+    const live = series.map((s, j) => ((s.data[i] || 0) > 0 ? j : -1)).filter(j => j >= 0)
+    return live.length ? live : series.map((_, j) => j)
+  }
+
+  /** Grouped geometry is per category, not per series.
+   *
+   *  A category is only divided among the series that actually have a value in
+   *  it. Dividing every category by `series.length` is right when every series
+   *  has every category, which is true of designations and skills. It is wrong
+   *  for projects and for most locations, where a slice belongs to exactly one
+   *  vendor: the other two draw nothing, their slots stay reserved, and the one
+   *  real bar sits a third of a category left or right of its own label with
+   *  two thirds of the chart empty. Reported 25 Sep on Compare by = Project. */
+  const groupGeom = labels.map((_, i) => {
+    const live = liveIn(i)
+    const g = groupedColumn(slot, live.length)
+    return { w: g.w, dx: new Map(live.map((j, k) => [j, g.dxAt(k)])) }
   })
 
   return (
@@ -82,10 +94,13 @@ export function ColumnChart({
             const v = s.data[i] || 0
             const h = Math.max(0, GEO.H - GEO.B - py(v))
             if (h <= 0.5) return null
-            const g = geom[j]
+            const gg = groupGeom[i]
+            const dx = layout === 'grouped' ? gg.dx.get(j) : geom[j].dx
+            if (dx == null) return null
+            const w = layout === 'grouped' ? gg.w : geom[j].w
             return (
               <path key={`${i}-${j}`} className="col-bar"
-                    d={topRounded(cx + g.dx, py(v), g.w, h, COLUMN.borderRadius)}
+                    d={topRounded(cx + dx, py(v), w, h, COLUMN.borderRadius)}
                     fill={s.color} />
             )
           })
@@ -93,8 +108,12 @@ export function ColumnChart({
         <XLabels labels={labels} width={W} fit={fit} />
         {labels.map((lb, i) => {
           const cx = GEO.L + slot * (i + 0.5)
-          const rows = series.map(s =>
-            [s.color, s.name, fmtVal(s.data[i] || 0, kind, unit)] as [string, string, string])
+          /* The hover card lists what the category actually drew. A project run
+             by one vendor used to report the other two at 0%. */
+          const shown = layout === 'grouped' ? liveIn(i) : series.map((_, j) => j)
+          const rows = shown.map(j =>
+            [series[j].color, series[j].name,
+             fmtVal(series[j].data[i] || 0, kind, unit)] as [string, string, string])
           const show = (e: React.PointerEvent | React.FocusEvent) => {
             setActive(i); onEnter({ label: lb, bx: cx - slot / 2, bw: slot, rows }, e)
           }

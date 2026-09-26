@@ -185,7 +185,7 @@ export function contractElapsed(vendorName: string): number {
 /** The day the budget runs out at the rate it has been spent.
  *
  *  Derived, not configured. It used to be a date in config/vendors.json, which
- *  let it contradict the burn beside it: PH Engineering read 91% spent against
+ *  let it contradict the burn beside it: Adventure Inc read 91% spent against
  *  93% of its term elapsed, which is under the run rate, while the configured
  *  date said the money ran out a month early. */
 export function contractExhausts(vendorName: string): number | null {
@@ -506,7 +506,7 @@ export interface EmployeeSplit { over: number | null; under: number | null }
  *  The draw used to be uniform between a tenth and 2.15 times the mean, which
  *  put as many people at 6% as at 120% and left 79% of a vendor's roster
  *  outside the healthy band. Worse, it capped a seat at 2.15 times the mean, so
- *  Ploceus at 45% could not produce a single person over 100% and the worst
+ *  InfoSystems at 45% could not produce a single person over 100% and the worst
  *  vendor in the book reported that nobody was overworked. This is lognormal
  *  instead: most people near the mean, a thin right tail of people carrying too
  *  much, and no ceiling that depends on the vendor's average. `utilizationSpread`

@@ -62,22 +62,22 @@
       }
     },
     "billablePortfolioCost": {
-      "label": "Actual Cost",
+      "label": "Verified Cost",
       "tooltip": {
         "hero": "Productive work delivered, valued at your rate card.",
         "card": "Productive work delivered, valued at your rate card."
       }
     },
     "leakageSummary": {
-      "label": "Leakage Breakdown",
+      "label": "Unproductive Cost Breakdown",
       "tooltip": {
-        "card": "Contracted capacity that did not become productive work."
+        "card": "Logged hours that did not become productive work, valued at your rate card."
       }
     },
     "leakageValue": {
-      "label": "Leakage Value",
+      "label": "Unproductive Cost",
       "tooltip": {
-        "hero": "Booked hours that did not become productive work, valued at your rate card."
+        "hero": "Logged hours that did not become productive work, valued at your rate card."
       }
     },
     "hoursNotDelivered": {
@@ -87,9 +87,9 @@
       }
     },
     "fteEquivalent": {
-      "label": "FTE equivalent",
+      "label": "Excess FTEs",
       "tooltip": {
-        "hero": "Hours not delivered counted as full-time people, at 7.5 hours a working day."
+        "hero": "Hours not delivered, counted as whole people at 7.5 hours a working day."
       }
     },
     "contractRenewals": {
@@ -105,7 +105,7 @@
       }
     },
     "costAtRisk": {
-      "label": "Cost Loss",
+      "label": "Financial Impact",
       "tooltip": {
         "hero": "Contracted capacity not delivered, valued at your rate card.",
         "card": "Contracted capacity not delivered, valued at your rate card."
@@ -127,7 +127,7 @@
     "excessFtes": {
       "label": "Excess FTEs",
       "tooltip": {
-        "card": "Contracted capacity not delivered, counted as whole people."
+        "card": "Hours not delivered, counted as whole people at 7.5 hours a working day."
       }
     },
     "overUtilizedEmployee": {
@@ -151,7 +151,7 @@
       }
     },
     "billableCostTrend": {
-      "label": "Billable Cost Trend",
+      "label": "Verified Cost Trend",
       "tooltip": {
         "card": "Productive work delivered, valued at your rate card."
       }
@@ -163,7 +163,7 @@
       }
     },
     "gap": {
-      "label": "Gap",
+      "label": "Unproductive hours",
       "tooltip": {
         "card": "Logged hours that were not productive work."
       }
@@ -175,9 +175,9 @@
       }
     },
     "leakageFtes": {
-      "label": "FTEs on non-productive work",
+      "label": "Unproductive FTEs",
       "tooltip": {
-        "card": "Booked hours that were not productive work, counted as whole people."
+        "card": "Logged hours that were not productive work, counted as whole people."
       }
     },
     "contractValue": {
@@ -187,7 +187,7 @@
       }
     },
     "actualCost": {
-      "label": "Actual Cost",
+      "label": "Verified Cost",
       "tooltip": {
         "card": "Productive work delivered, valued at your rate card."
       }
@@ -199,15 +199,15 @@
       }
     },
     "capacityGap": {
-      "label": "Capacity gap",
+      "label": "Hours not delivered",
       "tooltip": {
-        "card": "Contracted productive hours the vendor did not deliver."
+        "card": "Contracted productive hours not received."
       }
     },
     "costOfGap": {
       "label": "Cost of the gap",
       "tooltip": {
-        "card": "The capacity gap at your rate card."
+        "card": "Hours not delivered, valued at your rate card."
       }
     },
     "trackedOtHours": {
@@ -258,6 +258,12 @@
         "hero": "Projects off track against their plan."
       }
     },
+    "vendorTiers": {
+      "label": "Tactical / Strategic Vendors",
+      "tooltip": {
+        "hero": "Vendors in view, split by the tier they are contracted at."
+      }
+    },
     "contractValueAtRisk": {
       "label": "Contract Value at Risk",
       "tooltip": {
@@ -295,7 +301,7 @@
       }
     },
     "resources": {
-      "label": "Resources",
+      "label": "Employees",
       "tooltip": {
         "card": "People this vendor has on contract with you."
       }

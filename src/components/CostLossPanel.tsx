@@ -17,10 +17,10 @@ import type { DateState, Period } from '../engine/types.ts'
 
 const PERIODS = copy.ui.periods as Period[]
 
-/** The Cost Loss drilldown.
+/** The Financial Impact drilldown.
  *
  *  A replica of the slide-out the shipped build opens from the chevron on its
- *  Cost Loss tile: the headline with its own trend, the three hour figures
+ *  Financial Impact tile: the headline with its own trend, the three hour figures
  *  behind it, its own period selection independent of the page, then the
  *  breakup by vertical and by vendor.
  *
@@ -109,8 +109,8 @@ export function CostLossPanel({ scope, onVendor }: {
             </div>
             <div className="kv">
               <div><span>Expected productive hours</span><b>{hrs(totals.expected)}</b></div>
-              <div><span>Hours not delivered</span><b>{hrs(F.hoursNotDelivered(totals))}</b></div>
-              <div><span>FTE equivalent</span><b>{fteFmt(fte)}</b></div>
+              <div><span>{metricLabel('hoursNotDelivered')}</span><b>{hrs(F.hoursNotDelivered(totals))}</b></div>
+              <div><span>{metricLabel('fteEquivalent')}</span><b>{fteFmt(fte)}</b></div>
             </div>
           </section>
 
@@ -125,7 +125,7 @@ export function CostLossPanel({ scope, onVendor }: {
                         onToggle={id => d({ t: 'set', patch: { openPop: id } })} />
           </div>
 
-          <h3 className="dl-h">Cost Loss Trend</h3>
+          <h3 className="dl-h">{metricLabel('costAtRisk')} Trend</h3>
           <AreaChart data={trend} labels={buckets.map(b => b.label)} color={theme.color.down}
                      kind="k" unit="money" fill={false} seriesName={metricLabel('costAtRisk')}
                      width={340} />

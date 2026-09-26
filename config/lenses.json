@@ -53,7 +53,7 @@
         "fteEquivalent",
         "slaCompliance",
         "projectsAtRisk",
-        "contractValueAtRisk"
+        "vendorTiers"
       ],
       "sections": [
         "deliveryPredictability",
@@ -74,7 +74,7 @@
       "navLabel": "Capacity & Utilization",
       "title": "Capacity & Utilization",
       "subtitle": "Assess how effectively workforce capacity is utilized and where imbalances create {risk} or inefficiency.",
-      "defaultPeriod": "Weekly",
+      "defaultPeriod": "Yearly",
       "hero": [
         "effectiveUtilization",
         "idleCapacity",
@@ -95,7 +95,7 @@
       "navLabel": "Cost Efficiency",
       "title": "Cost Efficiency",
       "subtitle": "Quantify how much vendor spend converts into productive work, and what's lost to {leakage} and idle capacity.",
-      "defaultPeriod": "Weekly",
+      "defaultPeriod": "Yearly",
       "hero": [
         "leakageValue",
         "capacityUtilization",

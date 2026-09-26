@@ -6,10 +6,10 @@
   "renewalWindowDays": 90,
   "vendors": [
     {
-      "id": "ph-engineering",
-      "name": "PH Engineering",
+      "id": "adventure-inc",
+      "name": "Adventure Inc",
       "vertical": "healthcare",
-      "logo": "jamocha",
+      "logo": "adventure",
       "seed": 1103,
       "headcount": 300,
       "dataFrom": "2016-01-01",
@@ -138,10 +138,10 @@
       }
     },
     {
-      "id": "ph-operations",
-      "name": "PH Operations",
+      "id": "cts-consulting",
+      "name": "CTS Consulting",
       "vertical": "healthcare",
-      "logo": "prohance",
+      "logo": "cts",
       "seed": 2207,
       "headcount": 580,
       "dataFrom": "2016-01-01",
@@ -275,10 +275,10 @@
       }
     },
     {
-      "id": "ploceus",
-      "name": "Ploceus",
+      "id": "infosystems",
+      "name": "InfoSystems",
       "vertical": "services",
-      "logo": "ploceus",
+      "logo": "infosystems",
       "seed": 3301,
       "headcount": 70,
       "dataFrom": "2016-01-01",

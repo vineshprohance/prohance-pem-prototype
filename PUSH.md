@@ -7,7 +7,7 @@ come from a machine that is logged in. Two commands.
 
 ```bash
 cd <where you unpacked prohance-pem-ui>
-git remote add origin https://github.com/vineshprohance/prohance-pem-prototype
+git remote add origin https://github.com/prohance-demos/opm_demo
 git push -u origin main
 ```
 
@@ -17,7 +17,7 @@ message, so there is nothing to initialise.
 ## If you want a fresh repo instead
 
 ```bash
-gh repo create prohance-pem-prototype --private --source=. --remote=origin --push
+gh repo create prohance-demos/opm_demo --private --source=. --remote=origin --push
 ```
 
 Swap `--private` for `--public` if the URL has to open for anyone without an
@@ -35,7 +35,7 @@ asset path to get wrong.
 The URL is then:
 
 ```
-https://vineshprohance.github.io/prohance-pem-prototype/
+https://prohance-demos.github.io/opm_demo/
 ```
 
 It takes a minute or two the first time. The Actions tab shows the run.

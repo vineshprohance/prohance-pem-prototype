@@ -20,8 +20,8 @@ percentage into a `.tsx` file, stop: the value belongs in a formula or in
 
 **2. `npm run verify` must stay green.**
 `test:engine` pins every headline figure for Yearly 2026 and the identities the
-Cost Efficiency page rests on, above all **Contract Value minus Billable
-Portfolio Cost equals Cost Loss**, per vendor and across the portfolio. If those
+Cost Efficiency page rests on, above all **Contract Value minus Verified
+Cost equals Financial Impact**, per vendor and across the portfolio. If those
 three numbers stop agreeing, the page is telling three stories about the same
 money. `test:charts` pins the axis ladder and the column
 geometry. The Playwright suite drives every filter and guards every defect the
@@ -174,6 +174,12 @@ so nothing is off limits. Three things there are load-bearing:
 
 - `niceMax` in `primitives.ts` is the rounding ladder the product's axes land on.
   Every bar height and area path scales with it. `test:charts` pins it.
+- **Grouped columns divide a category among the series that have a value in
+  it**, never among all of them, which is `groupedColumn` in `primitives.ts`.
+  Designations and skills belong to every vendor, so nothing changes there. A
+  project belongs to exactly one, and dividing by three reserved two empty slots
+  and pushed the one real bar a third of a category off its own label. Six of
+  the eight locations had the same defect. `test:charts` pins it.
 - `ColumnChart` defaults to `layout="overlay"`, which is how the product draws a
   pair of series: both centred on the category, wide behind and narrow in front,
   never side by side. `layout="grouped"` puts them beside each other, for a chart
@@ -256,32 +262,32 @@ See `docs/AUDIT-2026-09-23.md` for the full table with reasons.
   because a governance conversation about $40M does not happen over a $4M
   portfolio.
 - Idle Capacity is 100 minus Capacity Utilization, the PEM Metrics workbook
-  definition. Leakage is non-productive hours over *contracted* hours, not over
+  definition. Unproductive Cost is non-productive hours over *contracted* hours, not over
   logged hours, at the product owner's instruction: the reference point is what
   you paid for.
 - Overtime bills at the contracted rate. There is no premium, confirmed with the
   product owner.
-- FTE equivalent divides hours not delivered by 7.5 hours per working day, so it
+- Excess FTEs divides hours not delivered by 7.5 hours per working day, so it
   reads the same whether you look at a week or a year.
 - Delta chips carry a `tone` separate from their arrow direction. A rising cost
   points up and reads red. Set `goodDown` on `delta()` and `moneyDelta()` for
   any metric where less is better.
-- Threshold pills go on exactly two metrics, Vendor Score and Leakage Summary,
+- Threshold pills go on exactly two metrics, Vendor Score and Unproductive Cost Breakdown,
   which is what the live build badges. Audited 23 Sep 2026 and pinned by a test.
   Overtime Integrity states its number and leaves the reading to the viewer.
-- The drilldown chevron is on Cost Loss, as in the live build, and on Hours not
-  delivered and FTE equivalent, because the Cost Loss slide-out is where those
-  two numbers live. `drill: 'costLoss'` in the registry is the hook.
+- The drilldown chevron is on Financial Impact, as in the live build, and on
+  Hours not delivered and Excess FTEs, because that slide-out is where those two
+  numbers live. `drill: 'costLoss'` in the registry is the hook.
 - Headcount reads by designation, not by role: Associate, Senior Associate,
   Lead, Manager, each with a cost factor. The designation strip on a vendor card
   rescales that column by the designation's share of the roster; the aside rows
   sum to the vendor's headcount.
-- Leakage Value sits above Cost Loss across the portfolio, $40.34M against
-  $34.24M. Leakage counts every non-productive hour inside logged time; cost
-  loss counts only the hours never delivered against contracted capacity. A
-  build where portfolio leakage came in under cost loss was telling the reader
-  that waste is smaller than absence. `test:engine` pins the ordering. One
-  vendor can invert it and Ploceus does: at 42% capacity utilization most of its
+- Unproductive Cost sits above Financial Impact across the portfolio, $40.34M
+  against $34.24M. Unproductive Cost counts every non-productive hour inside
+  logged time; Financial Impact counts only the hours never delivered against
+  contracted capacity. A build where the first came in under the second was
+  telling the reader that waste is smaller than absence. `test:engine` pins the ordering. One
+  vendor can invert it and InfoSystems does: at 42% capacity utilization most of its
   loss is hours that never arrived, not hours wasted once logged.
 - On-Time Delivery, not Delivery Predictability. Nothing is predicted: it is
   tasks delivered on time against tasks assigned. "Predictability" is a lens
@@ -292,12 +298,12 @@ See `docs/AUDIT-2026-09-23.md` for the full table with reasons.
   it. That relationship is not written on screen, at the product owner's
   instruction.
 - The contract exhaustion date is derived from the burn and the term, never
-  configured. A configured date let PH Engineering read 91% spent against 93% of
+  configured. A configured date let Adventure Inc read 91% spent against 93% of
   its term elapsed while claiming the money ran out a month early.
-- "Cost Loss", "Idle Time Cost", "Actual Cost Incurred" and "Headcount by
+- "Financial Impact", "Unproductive Cost", "Verified Cost" and "Headcount by
   Designation" are the current names. The metric ids behind them are still
-  `costAtRisk`, `idleCost`, `billableCost` and `headcountByRole`, so a rename
-  stays a `config/copy.json` edit and no test or lens config has to move.
+  `costAtRisk`, `leakageValue`, `billableCost` and `headcountByRole`, so a
+  rename stays a `config/copy.json` edit and no test or lens config has to move.
 - Over and Under Utilized Employee are shares of seats, not of hours. A seat's
   utilization is a lognormal draw around its vendor's mean, scattered by
   `personality.utilizationSpread`. It was uniform until 1.5, which put 79% of a
@@ -315,7 +321,41 @@ See `docs/AUDIT-2026-09-23.md` for the full table with reasons.
 - Unused Capacity and Idle Time Cost are different things and the tooltips say
   so. Unused Capacity is contracted capacity that never became work, 100 minus
   capacity utilization. Idle Time Cost is idle inside the hours that were
-  logged, about 14% of logged against a 32% Unused Capacity for PH Engineering.
+  logged, about 14% of logged against a 32% Unused Capacity for Adventure Inc.
+
+## One name per definition
+
+The product owner's rule from the 25 Sep review: a customer has to read this
+without a ProHance person beside them, so **one quantity carries one name on
+every screen**. Before 1.9 the same function was labelled three ways.
+
+| The quantity | The one name |
+| --- | --- |
+| `(contracted - productive) x rate` | **Financial Impact** |
+| `(logged - productive) x rate` | **Unproductive Cost** |
+| `productive x rate` | **Verified Cost** |
+| `contracted - productive`, in hours | **Hours not delivered** |
+| the same, in people | **Excess FTEs** |
+| a person on contract | an **Employee**; a count of them is **Headcount** |
+
+`Cost of the gap` is the one deliberate exception, kept at the product owner's
+instruction: inside the Partner Efficiency bar it is a component of Contract
+Value, and the position carries the meaning.
+
+Two traps this closed. "Gap" and "Capacity gap" used to be different numbers on
+different cards, one measured from logged hours and one from contracted. And
+"Leakage Breakdown" carried a tooltip describing the *other* family entirely.
+
+Before adding a label, search `config/copy.json` for its tooltip sentence. If
+that sentence is already there under another id, you are about to add a fourth
+name to something that has three.
+Person nouns are **Employee** and **Headcount** only, at the product owner's
+decision on 26 Sep. Resources is gone from every label. FTE stays, but only for
+a derived equivalent: Excess FTEs is not a count of named people. "People" may
+appear inside a tooltip as plain English, which explains rather than competes.
+Neither "users" nor "contractors" has ever appeared in this build; that was
+production, not the prototype.
+
 
 ## Units, and the persona that reads them
 
@@ -379,16 +419,16 @@ Grey is the remainder: the part of a bar that is not the story.
 
 The three `vendorSeries` hues exist for exactly one job, charts where vendors
 compete side by side, which today is Consolidation Levers and Vendor Dependency.
-Because they are used nowhere else, a teal anywhere on a page means PH
-Operations. Do not borrow them for a stacked bar.
+Because they are used nowhere else, a teal anywhere on a page means CTS
+Consulting. Do not borrow them for a stacked bar.
 
 Status colours are unchanged and separate: green, amber and red on the two
 badged metrics, the Risk Status level, the delta chips and the hero sparklines.
-A money headline is green only where it is money you got something for; Cost
-Loss prints in ink, because green on a loss reads as good news.
+A money headline is green only where it is money you got something for;
+Financial Impact prints in ink, because green on a loss reads as good news.
 
 The build carried eight unrelated data hues before 1.6, with teal meaning
-"non-core activities" on one card and "PH Operations" on the next.
+"non-core activities" on one card and "CTS Consulting" on the next.
 
 ## Say it once
 
@@ -448,7 +488,7 @@ width, and two baselines on the vendor page, which is two rows of four.
 
 ## A list of numbers is not a visualisation
 
-Partner Efficiency and Leakage Breakdown were 575px and 572px, the two tallest
+Partner Efficiency and the Unproductive Cost Breakdown were 575px and 572px, the two tallest
 cards on a page already four screens long, and both were a column of label-value
 rows. They are one stacked bar each now, `StackBar` in `MetricSection.tsx`,
 which is the progress-bar idiom the location rows already use, split into named

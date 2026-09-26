@@ -1,7 +1,7 @@
 /* Chart geometry guards. Run with:  npm run test:charts
  * These are the rungs and ratios the product's charts land on. Changing one
  * moves every bar and every area path, so it should be a deliberate edit. */
-import { COLUMN, OVERLAY_POINT_PADDING, columnWidth, niceMax } from '../src/components/charts/primitives.ts'
+import { COLUMN, OVERLAY_POINT_PADDING, columnWidth, groupedColumn, niceMax } from '../src/components/charts/primitives.ts'
 
 let fails = 0
 const eq = (name: string, got: unknown, want: unknown) => {
@@ -36,6 +36,20 @@ eq('narrow sits inside wide', narrow < wide, true)
 eq('max point width caps wide bars', columnWidth(400, OVERLAY_POINT_PADDING[0]) <= COLUMN.maxPointWidth + 0.01, true)
 eq('cap keeps the width ratio', +(columnWidth(400, OVERLAY_POINT_PADDING[1]) / columnWidth(400, OVERLAY_POINT_PADDING[0])).toFixed(4),
    +(narrow / wide).toFixed(4))
+
+/* grouped geometry: a category is divided among the series that actually have
+   a value in it, never among all of them. Consolidation Levers compared by
+   Project has one vendor per project, and used to draw that bar a third of a
+   category away from its own label. */
+const g1 = groupedColumn(slot, 1)
+const g2 = groupedColumn(slot, 2)
+const g3 = groupedColumn(slot, 3)
+eq('one owner centres its bar', +g1.dxAt(0).toFixed(6), +(-g1.w / 2).toFixed(6))
+eq('two owners sit either side of centre', +(g2.dxAt(0) + g2.dxAt(1) + g2.w).toFixed(6), 0)
+eq('three owners stay centred as a set', +(g3.dxAt(0) + g3.dxAt(2) + g3.w).toFixed(6), 0)
+eq('three owners stay in order', g3.dxAt(0) < g3.dxAt(1) && g3.dxAt(1) < g3.dxAt(2), true)
+eq('fewer owners means a wider bar', g1.w > g2.w && g2.w > g3.w, true)
+eq('grouped bars honour the width cap', groupedColumn(400, 1).w <= COLUMN.maxPointWidth + 0.01, true)
 
 console.log(fails ? `\n${fails} chart geometry mismatches` : '\nall chart geometry checks passed')
 process.exit(fails ? 1 : 0)

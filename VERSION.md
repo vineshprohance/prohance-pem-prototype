@@ -3,6 +3,46 @@
 Newest first. One line per change. Bump the minor number for new capability,
 the patch number for fixes only.
 
+## 1.9.0, 26 Sep 2026
+
+Richard's review of 25 Sep, and one defect it surfaced.
+
+- **One name per definition, everywhere.** The review found Financial Impact and
+  Cost Loss printing the same number under two labels. The code showed worse:
+  `financialImpact.hero` and `costAtRisk.hero` are identical calls, and Cost of
+  the Gap is that same figure a third time. Five collision groups resolved.
+  Financial Impact for contracted capacity not delivered, Unproductive Cost for
+  logged hours that were not productive, Verified Cost for the productive work
+  delivered, Hours not delivered and Excess FTEs for the hours and the people.
+  Person nouns are Employee and Headcount only, so the Resources pair on Partner
+  Efficiency reads Employees. See "One name per definition" in `CLAUDE.md`. Cost
+  of the gap, Total Headcount and Headcount by Designation stay, at the product
+  owner's instruction.
+- **"Gap" and "Capacity gap" were different numbers** on different cards, one
+  measured from logged hours and one from contracted. So were Resources and
+  Total Headcount, FTE equivalent and Excess FTEs, Actual Cost and Billable
+  Cost. And Leakage Breakdown carried a tooltip describing the other family.
+- **The vendors are renamed.** Adventure Inc (strategic, 300), CTS Consulting
+  (tactical, 580) and InfoSystems (tactical, 70), with three new original logo
+  marks. Every seed is unchanged, so no figure on any screen moved: the
+  calibration test passes with the same expectations it had in 1.8.
+- **Contract Value at Risk is off the Delivery hero**, replaced by Tactical /
+  Strategic Vendors with a View list. It printed $37.59M beside Financial
+  Impact's $34.24M and nothing on screen said what separated them.
+- **Every lens opens on Yearly.** Cost Efficiency and Capacity were Weekly, so
+  Cost opened at $415K of leakage rather than $40.34M.
+- **Cost of the gap carries its FTE count**, pulled from the same formula as the
+  Excess FTEs pair above it rather than typed, so the money and the people
+  cannot disagree.
+- **Fixed: grouped columns floated off their labels.** A category was divided by
+  the number of series rather than by the series that actually have a value in
+  it. On Consolidation Levers compared by Project, where each project belongs to
+  one vendor, two of every three slots were reserved for bars that draw nothing
+  and the one real bar sat a third of a category left or right of its own label.
+  Six of the eight locations had it too. Designations and skills are unaffected,
+  because every vendor has all of them. `groupedColumn` in `primitives.ts`,
+  pinned by six new assertions in `test:charts`.
+
 ## 1.8.0, 25 Sep 2026
 
 Removed

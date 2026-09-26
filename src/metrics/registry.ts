@@ -309,8 +309,11 @@ export const METRICS: Record<string, MetricDef> = {
             value: usd(actual), sub: hrs(t.productive), color: CH.productive,
           },
           {
+            /* The FTE figure is the Excess FTEs pair above, pulled from the same
+               formula rather than typed, so the money and the people can never
+               disagree. Asked for on 25 Sep. */
             label: label('costOfGap'), share: contractValue > 0 ? (gapCost / contractValue) * 100 : 0,
-            value: usd(gapCost), sub: hrs(gap), color: CH.lossStrong,
+            value: usd(gapCost), sub: `${hrs(gap)} · ${fteFmt(fte)} FTE`, color: CH.lossStrong,
           },
         ],
         rows: [
@@ -319,7 +322,7 @@ export const METRICS: Record<string, MetricDef> = {
         ],
         labels: ctx.labels,
         data: ctx.bucketTotals.map(b => round2(b.productive * rate)),
-        trendLabel: 'Actual Cost Trend',
+        trendLabel: `${label('actualCost')} Trend`,
         color: CH.money,
       }
     },
@@ -335,7 +338,7 @@ export const METRICS: Record<string, MetricDef> = {
       return {
         kind: 'moneyArea',
         headline: usd(cost),
-        trendLabel: 'Actual Cost Trend',
+        trendLabel: `${label('actualCost')} Trend`,
         labels: ctx.labels,
         data: ctx.bucketTotals.map(t => round2(t.productive * rate)),
         color: CH.money,
@@ -675,7 +678,7 @@ export const METRICS: Record<string, MetricDef> = {
         kind: 'moneyArea',
         tone: 'loss',
         headline: usd(F.costLoss(ctx.totals, v)),
-        trendLabel: 'Cost Loss Trend',
+        trendLabel: `${label('costAtRisk')} Trend`,
         labels: ctx.labels,
         data: ctx.bucketTotals.map(t => round2(F.costLoss(t, v))),
         color: CH.money,
@@ -832,6 +835,33 @@ export const METRICS: Record<string, MetricDef> = {
                       `SLA ${pct(F.slaCompliance(x.t))}`] as [string, string]),
             }
           : null,
+      }
+    },
+  },
+
+  /** Tactical / Strategic Vendors.
+   *
+   *  Replaces Contract Value at Risk on the Delivery hero, per the 25 Sep
+   *  review: that tile printed $37.59M next to Financial Impact's $34.24M and
+   *  nothing on screen said what separated them. The tier split is how a
+   *  delivery head actually sorts the portfolio, and it is already the badge on
+   *  every vendor card. A tier is a contract fact, not a measurement, so the
+   *  tile carries no delta; the View list names which vendor sits where. */
+  vendorTiers: {
+    id: 'vendorTiers',
+    scopes: ['hero'],
+    hero(ctx) {
+      const tactical = F.vendorsByTier(ctx.scope, 'tactical')
+      const strategic = F.vendorsByTier(ctx.scope, 'strategic')
+      const rows: [string, string][] = [
+        ...tactical.map(v => [v, 'Tactical'] as [string, string]),
+        ...strategic.map(v => [v, 'Strategic'] as [string, string]),
+      ]
+      return {
+        kind: 'kpi',
+        value: `${tactical.length} / ${strategic.length}`,
+        delta: null,
+        detail: rows.length ? { title: 'Vendor tiers', rows } : null,
       }
     },
   },

@@ -49,9 +49,9 @@ together and each key only wandered 4% around it.
 | `wobble` | a weekly jitter so a trend reads as measured, not drawn with a ruler |
 | `utilizationSpread` | how widely that vendor's own seats scatter around its mean |
 
-A ratio moves because its two keys swing differently: PH Engineering's
+A ratio moves because its two keys swing differently: Adventure Inc's
 `productive` swings 0.20 against `expected`'s 0.02, so its capacity utilization
-climbs from 64% in January to 72% in August. Ploceus swings `onTime` 0.70 on a
+climbs from 64% in January to 72% in August. InfoSystems swings `onTime` 0.70 on a
 `sliding` shape, so its SLA falls from 35% to 25% while its overtime climbs from
 12.8% to 17.1%.
 
@@ -88,9 +88,9 @@ The 1.4 portfolio, Yearly 2026:
 
 | | FTE | Rate | CU | EU | SLA | Leakage Value | Cost Loss | Contract |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| PH Engineering | 300 | $74 | 68% | 60% | 77% | $14.56M | $10.28M | $138M |
-| PH Operations | 580 | $53 | 58% | 55% | 76% | $21.10M | $18.68M | $125M |
-| Ploceus | 70 | $90 | 42% | 45% | 30% | $4.68M | $5.29M | $12.7M |
+| Adventure Inc | 300 | $74 | 68% | 60% | 77% | $14.56M | $10.28M | $138M |
+| CTS Consulting | 580 | $53 | 58% | 55% | 76% | $21.10M | $18.68M | $125M |
+| InfoSystems | 70 | $90 | 42% | 45% | 30% | $4.68M | $5.29M | $12.7M |
 | Portfolio | 950 | | 60% | 56% | 75% | $40.34M | $34.24M | $275.7M |
 
 The portfolio row's Contract column is the signed value of the three contracts.
@@ -179,7 +179,7 @@ $40.34M against $34.24M. Leakage counts every non-productive hour inside logged
 time; cost loss counts only the hours never delivered against contracted
 capacity. A portfolio where leakage came in under cost loss would be saying that
 waste is smaller than absence. `tests/engine.test.ts` asserts the ordering, not
-just the figures. A single vendor may invert it, and Ploceus does: at 42%
+just the figures. A single vendor may invert it, and InfoSystems does: at 42%
 capacity utilization most of its loss is hours that never arrived rather than
 hours wasted once logged.
 
@@ -190,8 +190,8 @@ a `weight` for its share of the roster, and a `rate` multiplier on the vendor's
 bill rate. The weights and rates are set so a vendor's blended rate stays its
 card rate, which is why the rate multipliers average to about 1.
 
-The footprint is deliberately mixed: PH Engineering and PH Operations both run
-Bengaluru and Manila, so there is comparable work to consolidate, and Ploceus
+The footprint is deliberately mixed: Adventure Inc and CTS Consulting both run
+Bengaluru and Manila, so there is comparable work to consolidate, and InfoSystems
 sits onshore in Zurich and London, which is what its $90 rate and its numbers
 are made of. Inside a vendor the spread is about 20 points, Bengaluru at 67%
 against Belfast at 47%.
@@ -212,7 +212,7 @@ counting as fully under-utilized. The thresholds are in
 
 The draw used to be uniform between a tenth and 2.15 times the mean. That put as
 many people at 6% as at 120%, left 79% of a roster outside the healthy band, and
-capped a seat at 2.15 times the mean, so Ploceus at 45% could not produce a
+capped a seat at 2.15 times the mean, so InfoSystems at 45% could not produce a
 single person over 100% and the worst vendor in the book reported that nobody was
 overworked. A test now asserts every vendor can show one.
 

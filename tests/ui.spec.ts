@@ -89,7 +89,7 @@ test('vendor detail opens, recomputes and returns', async ({ page }) => {
 
   await page.goto('/#/vendorPerformance')
   await page.locator('.vhead').first().click()
-  await expect(page.locator('.phead h1')).toHaveText('PH Engineering')
+  await expect(page.locator('.phead h1')).toHaveText('Adventure Inc')
 
   const seen = new Set<string>()
   for (const p of ['Yearly', 'Quaterly', 'Monthly', 'Weekly']) {
@@ -224,7 +224,7 @@ test('each vertical scopes the page to its own vendors', async ({ page }) => {
   await page.locator('[data-popbody="vert"] .vertOpt').nth(0).uncheck()
   await page.click('[data-act="vertApply"]')
   await expect(page.locator('.vhead')).toHaveCount(1)
-  await expect(page.locator('.vhead .vname')).toHaveText('Ploceus')
+  await expect(page.locator('.vhead .vname')).toHaveText('InfoSystems')
 
   // and the one remaining vertical cannot be turned off
   await page.click('[data-pop="vert"]')
@@ -254,7 +254,7 @@ test('the two employee tiles carry no period comparison', async ({ page }) => {
 
 test('metric names follow config/copy.json', async ({ page }) => {
   await page.goto('/#/vendorPerformance')
-  await expect(page.locator('.kpi-label', { hasText: 'Cost Loss' })).toHaveCount(1)
+  await expect(page.locator('.kpi-label', { hasText: 'Financial Impact' })).toHaveCount(1)
   await page.goto('/#/capacityUtilizationHealth')
   await expect(page.locator('.sect h3', { hasText: 'Idle Time Cost' }).first()).toBeVisible()
   // the key-value row inside the card follows the same rename
@@ -283,8 +283,8 @@ test('the Cost Efficiency hero is five tiles in one row', async ({ page }) => {
   const tiles = page.locator('.kpis .kpi')
   await expect(tiles).toHaveCount(5)
   await expect(page.locator('.kpi-label')).toHaveText([
-    /Leakage Value/, /Capacity Utilization/, /Hours not delivered/,
-    /FTE equivalent/, /Upcoming Contract Renewals/,
+    /Unproductive Cost/, /Capacity Utilization/, /Hours not delivered/,
+    /Excess FTEs/, /Upcoming Contract Renewals/,
   ])
   // one row: every tile starts at the same y, and every number does too
   const tops = await page.$$eval('.kpis .kpi', els =>
@@ -313,7 +313,7 @@ test('the renewals tile opens the list of contracts behind the count', async ({ 
   await tile.locator('[data-kpi-detail="contractRenewals"]').click()
   await expect(page.locator('.kpi-pop')).toBeVisible()
   await expect(page.locator('.kpi-pop-r')).toHaveCount(3)
-  await expect(page.locator('.kpi-pop-r').first()).toContainText('Ploceus')
+  await expect(page.locator('.kpi-pop-r').first()).toContainText('InfoSystems')
   await expect(page.locator('.kpi-pop-r').first()).toContainText('15 Oct 2026')
   // it does not run off the right edge of the page
   const box = await page.locator('.kpi-pop').boundingBox()
@@ -323,15 +323,15 @@ test('the renewals tile opens the list of contracts behind the count', async ({ 
   await expect(page.locator('.kpi-pop')).toHaveCount(0)
 })
 
-test('Leakage Breakdown splits the leak by where it went', async ({ page }) => {
+test('Unproductive Cost Breakdown splits the leak by where it went', async ({ page }) => {
   await page.goto('/#/costEfficiency')
-  const card = page.locator('.sect', { hasText: 'Leakage Breakdown' }).first()
+  const card = page.locator('.sect', { hasText: 'Unproductive Cost Breakdown' }).first()
   await expect(card.locator('.bignum')).toHaveText(/%$/)
   await expect(card.locator('.badge')).toHaveCount(1)   // one of the two production badges
   // three named slices, drawn as one bar across contracted capacity
   await expect(card.locator('.stack > i')).toHaveCount(4)   // three slices plus the rest
   for (const row of ['Idle time', 'Non-core activities', 'Non-billable work',
-                     'Total leakage', 'FTEs on non-productive work'])
+                     'Total leakage', 'Unproductive FTEs'])
     await expect(card.locator('.slg', { hasText: row })).toHaveCount(1)
   // hours in the legend, the money beside them
   await expect(card.locator('.slg').first().locator('em')).toHaveText(/^\$/)
@@ -350,12 +350,12 @@ test('Partner Efficiency replaces the single cost figure', async ({ page }) => {
   const card = page.locator('.sect', { hasText: 'Partner Efficiency' }).first()
   // workforce size on the left, the part you are not getting on the right
   await expect(card.locator('.pepair > div')).toHaveCount(2)
-  await expect(card.locator('.pepair')).toContainText('Resources')
+  await expect(card.locator('.pepair')).toContainText('Employees')
   await expect(card.locator('.pepair')).toContainText('Excess FTEs')
   // contract value split in two: what the work you got cost, and what the work
   // you did not get cost
   await expect(card.locator('.stack > i')).toHaveCount(2)
-  for (const row of ['Actual Cost', 'Cost of the gap', 'Contract Value',
+  for (const row of ['Verified Cost', 'Cost of the gap', 'Contract Value',
                      'Cost per productive hour'])
     await expect(card.locator('.slg', { hasText: row })).toHaveCount(1)
   const shares = await card.locator('.stack > i').evaluateAll(
@@ -390,13 +390,13 @@ test('At-Risk Vendors counts one and names it', async ({ page }) => {
   // and the count carries the list
   await page.click('[data-kpi-detail="atRiskVendors"]')
   const pop = page.locator('.kpi-pop')
-  await expect(pop).toContainText('Ploceus')
+  await expect(pop).toContainText('InfoSystems')
   await expect(pop).toContainText(/score 37/)
 })
 
 test('the vendor page carries the money beside the verdict', async ({ page }) => {
   await page.goto('/#/vendorPerformance')
-  await expect(page.locator('.vgrid h3', { hasText: 'Cost Loss' })).toHaveCount(3)
+  await expect(page.locator('.vgrid h3', { hasText: 'Financial Impact' })).toHaveCount(3)
   // and no designation strip: it moved three ratios and decided nothing
   await expect(page.locator('.vdesig')).toHaveCount(0)
   await page.goto('/#/costEfficiency')
@@ -446,8 +446,8 @@ test('the Delivery lens carries what a delivery head asks for', async ({ page })
   await page.goto('/#/deliveryPerformance')
   await expect(page.locator('.phead h1')).toHaveText('Delivery Performance')
   await expect(page.locator('.kpi-label')).toHaveText([
-    /Financial Impact/, /FTE equivalent/, /SLA Compliance/,
-    /Projects at Risk/, /Contract Value at Risk/,
+    /Financial Impact/, /Excess FTEs/, /SLA Compliance/,
+    /Projects at Risk/, /Tactical . Strategic Vendors/,
   ])
   await expect(page.locator('.kpi', { hasText: 'Projects at Risk' })
     .locator('.kpi-val')).toHaveText(/3 of 6/)
@@ -488,7 +488,7 @@ test('the SLA risk summary is one row per vendor, worst first', async ({ page })
   await page.goto('/#/deliveryPerformance')
   const rows = page.locator('.rcrow')
   await expect(rows, 'a row per vendor, not a block per project').toHaveCount(3)
-  await expect(rows.first().locator('.rcv')).toHaveText('Ploceus')   // 1 of 1 at risk
+  await expect(rows.first().locator('.rcv')).toHaveText('InfoSystems')   // 1 of 1 at risk
   await expect(page.locator('.rcchip')).toHaveCount(6)               // every project
   await expect(page.locator('.rcchip.critical')).toHaveCount(3)
   // the reason is one tap away rather than always on screen
@@ -597,7 +597,7 @@ test('a rising cost reads red even though the arrow points up', async ({ page })
     label: e.querySelector('.kpi-label')?.textContent?.trim() ?? '',
     cls: e.querySelector('.delta')?.className ?? '',
   })))
-  for (const t of tone.filter(x => /Leakage Value|Hours not delivered|FTE equivalent/.test(x.label))) {
+  for (const t of tone.filter(x => /Unproductive Cost|Hours not delivered|Excess FTEs/.test(x.label))) {
     if (!t.cls) continue
     const up = /\bup\b/.test(t.cls)
     expect(t.cls, `${t.label} going ${up ? 'up' : 'down'} must read ${up ? 'bad' : 'good'}`)
@@ -818,20 +818,20 @@ test('only Vendor Score and Leakage Summary carry a threshold badge', async ({ p
       badge: !!s.querySelector('.badge'),
     })))) if (name.badge) badged.add(name.title.replace(/\s+$/, ''))
   }
-  expect([...badged].sort()).toEqual(['Leakage Breakdown', 'Vendor Score'])
+  expect([...badged].sort()).toEqual(['Unproductive Cost Breakdown', 'Vendor Score'])
 })
 
-test('only Cost Loss and its two components carry a drilldown chevron', async ({ page }) => {
+test('only Financial Impact and its two components carry a drilldown chevron', async ({ page }) => {
   await page.goto('/#/vendorPerformance')
   await expect(page.locator('.kpi-drill')).toHaveCount(1)
-  await expect(page.locator('.kpi', { hasText: 'Cost Loss' }).locator('.kpi-drill')).toHaveCount(1)
+  await expect(page.locator('.kpi', { hasText: 'Financial Impact' }).locator('.kpi-drill')).toHaveCount(1)
   await page.goto('/#/capacityUtilizationHealth')
   await expect(page.locator('.kpi-drill')).toHaveCount(0)
   await page.goto('/#/costEfficiency')
   await expect(page.locator('.kpi-drill')).toHaveCount(2)
 })
 
-test('the Cost Loss drilldown replicates the shipped slide-out', async ({ page }) => {
+test('the Financial Impact drilldown replicates the shipped slide-out', async ({ page }) => {
   await page.goto('/#/vendorPerformance')
   await expect(page.locator('[data-testid="cost-loss-panel"]')).toHaveCount(0)
   await page.click('[data-drill-metric="costAtRisk"]')
@@ -843,9 +843,9 @@ test('the Cost Loss drilldown replicates the shipped slide-out', async ({ page }
   await expect(panel.locator('.dl-card .kv > div')).toHaveCount(3)
   await expect(panel).toContainText('Expected productive hours')
   await expect(panel).toContainText('Hours not delivered')
-  await expect(panel).toContainText('FTE equivalent')
+  await expect(panel).toContainText('Excess FTEs')
   await expect(panel.locator('[data-dlperiod]')).toHaveCount(4)
-  await expect(panel).toContainText('Cost Loss Trend')
+  await expect(panel).toContainText('Financial Impact Trend')
 
   // the two breakups, and they add up to the headline
   await expect(panel).toContainText('Vertical wise Breakup')
@@ -872,7 +872,7 @@ test('the drilldown scopes to the page filter and opens a vendor', async ({ page
   await expect(page.locator('.dl-vendor')).toHaveCount(2)
   await page.locator('.dl-vendor').first().click()
   await expect(page.locator('[data-testid="cost-loss-panel"]')).toHaveCount(0)
-  await expect(page.locator('.phead h1')).toHaveText('PH Operations')
+  await expect(page.locator('.phead h1')).toHaveText('CTS Consulting')
 })
 
 test('no trend chart ends on a part period', async ({ page }) => {

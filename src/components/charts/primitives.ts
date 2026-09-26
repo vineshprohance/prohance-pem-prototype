@@ -89,6 +89,28 @@ export function fmtVal(v: number, kind: TickKind, unit: ValueUnit): string {
 export const COLUMN = { groupPadding: 0.1, borderRadius: 4, maxPointWidth: 40 }
 export const OVERLAY_POINT_PADDING = [0.05, 0.28]
 
+/** Grouped column geometry for ONE category.
+ *
+ *  `live` is how many series actually have a value in this category, which is
+ *  not the same as how many series the chart has. Dividing every category by
+ *  the series count is right when every series has every category, as
+ *  designations and skills do. It is wrong for projects and for most locations,
+ *  where a slice belongs to exactly one vendor: the other series draw nothing,
+ *  their slots stay reserved, and the one real bar sits a third of a category
+ *  off its own label with two thirds of the chart empty.
+ *
+ *  `dxAt(k)` is the left edge of the k-th live bar, relative to the category
+ *  centre. With one live series that is -w/2, so the bar is centred. */
+export function groupedColumn(slot: number, live: number) {
+  const n = Math.max(1, live)
+  const group = slot * (1 - 2 * COLUMN.groupPadding)
+  const share = group / n
+  const w = Math.max(2, Math.min(share * 0.84, COLUMN.maxPointWidth))
+  const gap = Math.min(share * 0.16, 6)
+  const total = w * n + gap * (n - 1)
+  return { w, gap, total, dxAt: (k: number) => -total / 2 + k * (w + gap) }
+}
+
 /** Width of one column. Capped so a chart with only a handful of categories
  *  does not turn into slabs; the cap never bites at the nine-month and
  *  thirteen-week views, so those stay pixel-identical to the product. */

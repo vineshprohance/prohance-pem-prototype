@@ -95,32 +95,39 @@ export const NAV_ICONS: Record<string, JSX.Element> = {
 }
 
 const LOGOS: Record<string, JSX.Element> = {
-  jamocha: (
-    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="PH Engineering logo">
+  /* The three vendors are invented. These marks are original abstract shapes
+     drawn for them, not versions of any real company's logo. */
+  adventure: (
+    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="Adventure Inc logo">
       <rect width="42" height="42" rx="4" fill="#fff" stroke="#E4E7EC" />
-      <g transform="translate(4,11)">
-        <path d="M3 2c1.6-1.5 4-1.6 5.4.1 1-1.4 3.2-1.5 4.3-.2" fill="none" stroke="#C0872F" strokeWidth={1.6} strokeLinecap="round" />
-        <text x="0" y="11" fontFamily="Georgia,serif" fontSize="8.2" fontWeight="700" fill="#7A4E1D">Ju</text>
-        <text x="10.5" y="11" fontFamily="Georgia,serif" fontSize="8.2" fontWeight="700" fill="#C0872F">Mocha</text>
-        <rect x="0" y="14" width="34" height="3.4" rx="1.2" fill="#F1E4CE" />
-        <text x="1" y="16.8" fontFamily="Helvetica,Arial,sans-serif" fontSize="2.6" fill="#8A7047">ENGINEERING SERVICES</text>
-      </g>
+      <path d="M10.5 27.5 19 11.5l4.4 8.2" fill="none" stroke="#2F4B7C" strokeWidth={2.3}
+            strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21.6 27.5 26.6 18l4.9 9.5" fill="none" stroke="#E08A3C" strokeWidth={2.3}
+            strokeLinecap="round" strokeLinejoin="round" />
+      <text x="21" y="35.6" textAnchor="middle" fontFamily="Helvetica,Arial,sans-serif"
+            fontSize="4.5" fontWeight="700" letterSpacing=".3" fill="#2F4B7C">ADVENTURE</text>
     </svg>
   ),
-  prohance: (
-    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="PH Operations logo">
-      <rect width="42" height="42" rx="4" fill="#fff" stroke="#E4E7EC" />
-      <text x="21" y="23.5" textAnchor="middle" fontFamily="Helvetica,Arial,sans-serif" fontSize="6.1" fontWeight="700" letterSpacing=".2" fill="#0B7285">
-        PRO<tspan fill="#12B5C9">HANCE</tspan>
-      </text>
-      <rect x="9" y="25.4" width="24" height="1.1" rx=".55" fill="#12B5C9" />
+  cts: (
+    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="CTS Consulting logo">
+      <rect width="42" height="42" rx="4" fill="#0F3D5C" />
+      <rect x="10" y="21" width="4.4" height="9" rx="1.4" fill="#5FC2E8" />
+      <rect x="18.8" y="16.2" width="4.4" height="13.8" rx="1.4" fill="#8FD8F0" />
+      <rect x="27.6" y="11.6" width="4.4" height="18.4" rx="1.4" fill="#FFFFFF" />
+      <text x="21" y="37" textAnchor="middle" fontFamily="Helvetica,Arial,sans-serif"
+            fontSize="5.2" fontWeight="700" letterSpacing=".7" fill="#CFE9F5">CTS</text>
     </svg>
   ),
-  ploceus: (
-    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="Ploceus logo">
-      <rect x="6" y="3" width="30" height="36" rx="9" fill="#1F4C8F" />
-      <path d="M27.5 9.5c-6.5 2.4-10.4 7.2-12 12.6l4.6-1.2-2.6 5.2 6.6-4.1-1.8 4.6c3.6-3.3 5.9-9.3 5.2-17.1z" fill="#F4C11E" />
-      <path d="M15 21.5v11.5" stroke="#F4C11E" strokeWidth={2.4} strokeLinecap="round" />
+  infosystems: (
+    <svg className="logo" viewBox="0 0 42 42" role="img" aria-label="InfoSystems logo">
+      <rect width="42" height="42" rx="4" fill="#fff" stroke="#E4E7EC" />
+      <circle cx="21" cy="19" r="7.4" fill="none" stroke="#2F7D5B" strokeWidth={1.5} />
+      <circle cx="21" cy="11.6" r="2.4" fill="#2F7D5B" />
+      <circle cx="28.4" cy="19" r="2.4" fill="#57A97F" />
+      <circle cx="21" cy="26.4" r="2.4" fill="#2F7D5B" />
+      <circle cx="13.6" cy="19" r="2.4" fill="#57A97F" />
+      <text x="21" y="36.2" textAnchor="middle" fontFamily="Helvetica,Arial,sans-serif"
+            fontSize="4.2" fontWeight="700" letterSpacing=".15" fill="#2F7D5B">INFOSYSTEMS</text>
     </svg>
   ),
   generic: (

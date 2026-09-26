@@ -7,12 +7,12 @@
  * Three groups matter more than the rest:
  *
  *   The demo targets. 60% capacity utilization, $40M leakage value, 550K hours
- *   not delivered, 380 FTE equivalent. Those are the numbers the story is told
+ *   not delivered, 380 Excess FTEs. Those are the numbers the story is told
  *   with, agreed on the 23 Sep review.
  *
- *   The identities. Contract Value minus Actual Cost equals Cost Loss, to the
+ *   The identities. Contract Value minus Verified Cost equals Financial Impact, to the
  *   cent, per vendor and portfolio-wide, or the page is telling three different
- *   stories about the same money. And Leakage Value stays above Cost Loss, so
+ *   stories about the same money. And Unproductive Cost stays above Financial Impact, so
  *   the two figures on screen do not read as an error.
  *
  *   The floors. No day anywhere is missing a series, and no day prints a
@@ -32,7 +32,7 @@ const st: DateState = {
 const r = rangeFor(st)
 
 const expected: Record<string, Record<string, string>> = {
-  'PH Engineering': {
+  'Adventure Inc': {
     score: '71.6', cu: '68%', eu: '60%', out: '94.7%', sla: '77%', dp: '72.92%',
     expectedHrs: '433.98K hrs', logged: '491.84K hrs', productive: '295.11K hrs',
     leakage: '45.33%', leakValue: '$14.56M', hnd: '138.87K hrs', fteEq: '96', leakFte: '136',
@@ -40,7 +40,7 @@ const expected: Record<string, Record<string, string>> = {
     ot: '7%', otTracked: '34.43K hrs', otClaimed: '25.82K hrs', otFte: '18',
     otBilled: '$1.91M', unprodOt: '$1.02M', idleCost: '$5.1M', idleCap: '32%',
   },
-  'PH Operations': {
+  'CTS Consulting': {
     score: '65.2', cu: '58%', eu: '55%', out: '86.9%', sla: '76%', dp: '66.04%',
     expectedHrs: '839.03K hrs', logged: '884.79K hrs', productive: '486.64K hrs',
     leakage: '47.45%', leakValue: '$21.1M', hnd: '352.39K hrs', fteEq: '244', leakFte: '275',
@@ -48,7 +48,7 @@ const expected: Record<string, Record<string, string>> = {
     ot: '10%', otTracked: '88.48K hrs', otClaimed: '132.72K hrs', otFte: '92',
     otBilled: '$7.03M', unprodOt: '$2.11M', idleCost: '$6.96M', idleCap: '42%',
   },
-  Ploceus: {
+  InfoSystems: {
     score: '37.19', cu: '42%', eu: '45%', out: '85%', sla: '29.97%', dp: '25.48%',
     expectedHrs: '101.26K hrs', logged: '94.51K hrs', productive: '42.53K hrs',
     leakage: '51.33%', leakValue: '$4.68M', hnd: '58.73K hrs', fteEq: '41', leakFte: '36',
@@ -107,7 +107,7 @@ const sum = (f: (t: ReturnType<typeof aggregate>, n: string) => number) =>
 eq('TARGET capacity utilization ~60%', pct(F.capacityUtilization(all)), '59.98%')
 eq('TARGET leakage value ~$40M', usd(sum(F.leakageValue)), '$40.34M')
 eq('TARGET hours not delivered ~550K', hrs(F.hoursNotDelivered(all)), '550K hrs')
-eq('TARGET FTE equivalent north of 300', fte(F.fteEquivalent(all)), '380')
+eq('TARGET Excess FTEs north of 300', fte(F.fteEquivalent(all)), '380')
 eq('TARGET overtime rate ~9%', pct(F.overtimePct(all)), '9.32%')
 
 /* ---- the identities the page rests on ---- */
@@ -134,7 +134,7 @@ eq('portfolio cost loss', usd(cl), '$34.24M')
 eq('LEAKAGE VALUE STAYS ABOVE COST LOSS', sum(F.leakageValue) > cl, true)
 eq('no vendor exceeds 100% utilization',
    VENDOR_NAMES.every(n => (F.capacityUtilization(aggregate(n, r.a, r.b)) ?? 0) <= 100), true)
-eq('FTE equivalent is additive across vendors',
+eq('Excess FTEs is additive across vendors',
    fte(VENDOR_NAMES.reduce((a, n) => a + (F.fteEquivalent(aggregate(n, r.a, r.b)) ?? 0), 0)),
    fte(F.fteEquivalent(all)))
 
@@ -154,12 +154,12 @@ eq('project tasks add up to the vendor', VENDOR_NAMES.every(v => {
 }), true)
 eq('no project is flagged against its own numbers',
    PROJ.every(p => p.atRisk === (p.onTimePct < 70)), true)
-eq('one strategic vendor', F.vendorsByTier(VENDOR_NAMES, 'strategic').join(','), 'PH Engineering')
+eq('one strategic vendor', F.vendorsByTier(VENDOR_NAMES, 'strategic').join(','), 'Adventure Inc')
 eq('two tactical vendors', F.vendorsByTier(VENDOR_NAMES, 'tactical').length, 2)
 eq('renewals inside the window', F.upcomingRenewals(VENDOR_NAMES).length, 3)
 eq('renewals ordered by due date',
    F.upcomingRenewals(VENDOR_NAMES).map(x => x.vendor).join(' < '),
-   'Ploceus < PH Engineering < PH Operations')
+   'InfoSystems < Adventure Inc < CTS Consulting')
 
 /* ---- every dimension resolves on every vendor ---- */
 console.log('')
@@ -217,15 +217,15 @@ for (const v of VENDOR_NAMES) {
   eq(`${v} capacity utilization travels`,
      travel(v, F.capacityUtilization).range > 4, true)
 }
-eq('PH Engineering is improving',
-   travel('PH Engineering', F.slaCompliance).last >
-   travel('PH Engineering', F.slaCompliance).first, true)
-eq('Ploceus is sliding',
-   travel('Ploceus', F.slaCompliance).last <
-   travel('Ploceus', F.slaCompliance).first, true)
-eq('Ploceus overtime climbs as its delivery falls',
-   travel('Ploceus', F.overtimePct).last >
-   travel('Ploceus', F.overtimePct).first, true)
+eq('Adventure Inc is improving',
+   travel('Adventure Inc', F.slaCompliance).last >
+   travel('Adventure Inc', F.slaCompliance).first, true)
+eq('InfoSystems is sliding',
+   travel('InfoSystems', F.slaCompliance).last <
+   travel('InfoSystems', F.slaCompliance).first, true)
+eq('InfoSystems overtime climbs as its delivery falls',
+   travel('InfoSystems', F.overtimePct).last >
+   travel('InfoSystems', F.overtimePct).first, true)
 
 /* ---- the two metrics that used to print the same number ---- */
 console.log('')
